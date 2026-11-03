@@ -1,0 +1,12 @@
+S_TARGET    = GNU-FFTW-OMP-MPI
+S_FC        = mpif90
+S_LD        = mpif90
+S_FFLAGS    = -ffree-line-length-0 -fallow-argument-mismatch
+S_CFLAGS    = -DFC_UNDERSCORES
+S_F90FLAGS  = -O3
+S_FLAGSLD   = -lfftw3 -lfftw3_threads
+S_CPPARG    = -DFFTW -D_OMP_ -D_MPI_
+S_OMPF      = -fopenmp
+S_SAVEF     = -fno-automatic
+S_CC        = gcc
+S_MPIWRAP   = mpif90

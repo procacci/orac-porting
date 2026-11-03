@@ -1,0 +1,23 @@
+This test produce a short HREM trajectory for solvated FKB12 with ligand using the OpenMP/MPI 
+(2 threads 4 MPI process) 
+
+The input file is md.in
+the starting conf of the FKBP12-ligand is the file in start.pdb 
+potential parameters are in the directory ../ff/
+
+To run this test  just do form this directory 
+
+mpirun -n 4 ../../src/GNU-FFTW-OMP-MPI/orac < rem.in > rem.out
+
+The test should produce the directories TST0001-4 containing the output for the
+four walkers 
+
+each dir contains the following
+
+1.rem            diagnostic file with scaled energies 
+ij4i.xyz         xyz of the protein-ligand  only 
+md_1.pdb         full trajectory including the solvent 
+out0001          general output file gromacs/like for the walker 
+REM_DIAGNOSTIC   other diagnostic file with scaled energies 
+
+Reference output is in the directories PAR0001-4

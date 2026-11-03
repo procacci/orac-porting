@@ -1,0 +1,23 @@
+This test produce a swarm of NE alchemical trajectories
+for solvated FKB12 with ligand using the OpenMP/MPI 
+(2 threads 4 MPI process) 
+
+The input file is alchmey.in
+the starting conf are the files in the restart-dir produced by test2
+potential parameters are read from the tpgprm file produced in test1
+
+To run this test  just do form this directory 
+
+mpirun -n 4 ../../src/GNU-FFTW-OMP-MPI/orac < alchemy.in > alchemy.out
+
+The test should produce the directories TST0001-4 containing the output for the
+four NE runs 
+
+each dir contains the following
+
+1.5.wrk     work data file 
+ij4i.xyz    protein-ligand xyz file trajectory 
+md_1.pdb    full system pdb  trajectory
+out0001     general output for the NE MPI instance 
+
+Reference output is in the directories PAR0001-4

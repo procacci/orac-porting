@@ -1,0 +1,15 @@
+To compile the program OpenMP version with gfortran do the following
+./configure -GNU -FFTW -OMP
+make 
+If all is fine,  the executable is in the subdir GNU-FFTW-OMP
+
+To compile the program OpenMP/MPI version with gfortran do the following
+./configure -GNU -FFTW -OMP -MPI
+make 
+If all is fine the executable is in the subdir GNU-FFTW-OMP-MPI
+
+N.B. the fftw3 directory must be installed in the standard location and available in LD_PATH 
+
+
+
+

@@ -1,0 +1,30 @@
+
+
+# **** DATA FROM STEERED DYNAMICS *****
+
+# The data in this file must be post-processed; Lines can be of the following type:  
+ 
+#  a) bond n. I  TIME  R0(T) R  WORK(I) 
+# where: I is the i-the steered bond; TIME is the  actual time of the simulation; R0(T) is the driven
+# equilibrium coordinate; R is the actual bond coordinate and WORK(I) is the work done on this coordinate
+ 
+#  b) bend n. I  TIME  ALPHA0(T) ALPHA  WORK(I) 
+# where: I is the i-the steered bend; TIME is the actual time of the simulation; ALPHA0(T) is the driven
+# equilibrium coordinate; ALPHA is the actual bend coordinate and WORK(I) is the work done on this coordinate
+ 
+#  c) tors n. I  time  ALPHA0(T) ALPHA  WORK(I) 
+# where: I is the i-the steered tors; TIME is the actual time of the simulation; ALPHA0(T) is the driven
+# equilibrium coordinate; ALPHA is the actual bend cordinate and work(i) is the work done on this coordinate
+ 
+#  d) WORKfunction T LAMBDA WBO WBE WTO TOTWORK 
+ where T is the actual time of the simulation ; LAMBDA  is the driven overall coordinate; WBO is the total
+# work done on all the stretchings; WBE is the total work done on all the torsions; TOTWORK is the total 
+work done on the system during the nonequilibrium .process. Units are: Kj/mol, angs and degree
+
+
+ COM        500.         8.7401         8.7272        0.17415E-07
+ COM       0.100E+04     8.7401         8.8784       -0.84089E-07
+ COM       0.150E+04     8.7401         8.6738        0.66752E-07
+ COM       0.200E+04     8.7401         8.9867       -0.15171E-06
+ COM       0.250E+04     8.7401         8.8165       -0.53663E-06
+ COM       0.300E+04     8.7401         8.5981       -0.47898E-06

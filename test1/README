@@ -1,0 +1,26 @@
+This test produce a short trajectory for solvated FKB12 with ligand using
+the OpenMP executable (8 threads)
+
+The input file is md.in
+the starting conf of the FKBP12-ligand is the file in start.pdb 
+potential parameters are in the directory ../ff/
+
+To run this test  just do form this directory 
+
+../../src/GNU-FFTW-OMP/orac < md.in > test1.md.out
+
+The test should produce the follwoing files
+test1.md.out    -> general gromacs/like (md.log) output
+test1.G0.tt     -> time record of the energies for energy conservation check
+test1.md_1.pdb  -> trajetoru file 
+test1.com.dat   -> logand-protein com-com distance file  
+
+reference output are in the files
+md.out    
+G0.tt     
+md_1.pdb  
+com.dat    
+
+More info (potential, type of simulation, Ewald etc) in the md.in input files  
+ 
+CPU/elapsed timing for the various tasks are at the bottom of md.out 

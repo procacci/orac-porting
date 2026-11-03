@@ -1,0 +1,103 @@
+#
+# ------ Done with primadorac1.0 --------
+#
+ RESIDUE tst
+ atoms
+ group
+   c01    c3         -0.037277
+   h01    hc          0.074716
+   h02    hc          0.074716
+ group
+   c02    c3          0.045240
+   h03    h1          0.064889
+   h04    h1          0.064889
+ group
+   c03    ce         -0.008507
+   h05    h2          0.144062
+ group
+   c04    c3         -0.013545
+   h06    hc          0.090146
+   h07    hc          0.090146
+ group
+   n05    n          -0.353244
+   h08    hn          0.288995
+ group
+   c06    c3         -0.092316
+   h09    hc          0.067748
+ group
+   c07    c3         -0.071763
+   h10    hc          0.047380
+   h11    hc          0.047380
+ group
+   c08    c3         -0.056775
+   h12    hc          0.035296
+ group
+   c09    c3         -0.087901
+   h13    hc          0.021356
+   h14    hc          0.021356
+   h15    hc          0.021356
+ group
+   c10    ca         -0.036080
+   h16    h5          0.145914
+ group
+   c11    ca         -0.174545
+   h17    ha          0.124504
+ group
+   c12    ca         -0.123718
+   h18    h4          0.195304
+ group
+   c13    ca          0.021834
+   h19    h5          0.186595
+ group
+   c14    c3         -0.060922
+   h20    hc          0.046105
+   h21    hc          0.046105
+   h22    hc          0.046105
+ group
+   c15    c3         -0.099812
+   h23    hc          0.038328
+   h24    hc          0.038328
+   h25    hc          0.038328
+ group
+   s16    ss         -0.301251
+ group
+   n17    n2         -0.464052
+   s18    s6          1.504966
+   o19    o          -0.655654
+   o20    o          -0.676587
+ group
+   c21    c           0.306891
+   o22    o          -0.413838
+ group
+   c23    c           0.575573
+   o24    o          -0.801918
+   o25    o          -0.539025
+ group
+   c26    ca         -0.419817
+ group
+   c27    ca         -0.025999
+ end
+ bonds
+   s16   c01       s16   c04       c01   c02       c01   h01 
+   c01   h02       c02   n17       c02   h03       c02   h04 
+   n17   s18       c03   c04       c03   c21       c03   h05 
+   c04   h06       c04   h07       c21   n05       c21   o22 
+   n05   c06       n05   h08       c06   c07       c06   c23 
+   c06   h09       c07   c08       c07   h10       c07   h11 
+   c23   o24       c23   o25       c08   c09       c08   c15 
+   c08   h12       c09   h13       c09   h14       c09   h15 
+   s18   c26       s18   o19       s18   o20       c26   c10 
+   c26   c13       c10   c11       c10   h16       c11   c27 
+   c11   h17       c27   c12       c27   c14       c12   c13 
+   c12   h18       c13   h19       c14   h20       c14   h21 
+   c14   h22       c15   h23       c15   h24       c15   h25 
+ end
+ imphd
+   c04  c21  c03  h05     c03  n05  c21  o22 
+   c21  c06  n05  h08     c06  o24  c23  o25 
+   s18  c10  c26  c13     c26  c11  c10  h16 
+   c10  c27  c11  h17     c11  c12  c27  c14 
+   c27  c13  c12  h18     c26  c12  c13  h19 
+ end
+ termatom * *
+ RESIDUE_END

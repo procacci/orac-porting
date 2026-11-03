@@ -1,0 +1,71 @@
+#&T NTHREADS   2 
+#!&TST 
+&PARAMETERS
+   READ_TPGPRM_BIN ../../test1/1j4i.tpgprm  ! read potential from tpgprm file
+&END
+&SIMULATION
+   MDSIM
+   TEMPERATURE   300.0 40.0
+   ISOSTRESS PRESS-EXT 0.1 BARO-MASS 20.0
+   THERMOS
+       solute  20.0
+       solvent 20.0
+       cofm    20.0
+       temp_limit 8000.0
+   END
+&END
+&INTEGRATOR
+   TIMESTEP       15.0
+   MTS_RESPA
+      step intra 2
+      step intra 2
+      step nonbond 2  5.0  0.3 0.5
+      step nonbond 5  8.1  0.3 0.5  reciprocal
+      step nonbond 1 12.5  0.3 1.5
+   END
+&END
+
+#
+#  Run with Ewald and PME. Global fudge set on 1-4 interactions
+#
+
+&POTENTIAL
+   EWALD       PME    0.37  48 49 48   4
+   UPDATE      60.0   1.5
+   LINKED_CELL  18 18 18   1
+   DEFINE_ALCHEMICAL_ATOM 1 52 off
+   STEER_PATH ALCHEMY  ../15.off
+   SHIFT-POT 4.0 0.35
+   ADD_STR_COM
+      ligand  1 52 
+      target  53 1715
+      force   0.05  8.7 
+   END
+   STRETCHING HEAVY
+   QQ-FUDGE  0.83333
+   LJ-FUDGE  0.50
+&END
+
+&RUN
+   CONTROL      2
+   PROPERTY     900000.0
+   REJECT       0.0
+   TIME         1500.0
+   PRINT        150.0
+&END
+
+#
+# write restart file every 60.0 (approximately)
+#
+&INOUT
+   RESTART
+    ! reads restart files produced in test1
+    rmr ../../test2/b-RSTRT/ij4i -1  
+   END 	
+   ASCII   1500.0 OPEN md_1.pdb
+   PLOT FRAGMENT 150.0 OPEN ij4i.xyz
+   PLOT ALCHEMY 60.0  OPEN  1.5.wrk
+&END
+&PROPERTIES                                                                
+      DEF_FRAGMENT   1 1715
+&END                                                                      

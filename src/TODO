@@ -1,0 +1,39 @@
+
+***** do mapping in scalar_sum when fftw is used. 
+use the ready-to-go routine in fftw3_pme_init.f90 
+
+***** Multiple file reading. 
+Read_setup and read_solute changed already. Multiple reading works
+   only in MPI: each trajectories reads starting coordinates 
+from a file specified in kconf unit or kccord_slt. 
+
+1) In read_parameters for the multiple topologies one should do the following
+(ony when MPI)
+
+PROTEIN
+ala-o ala -arg etc etec
+END 
+
+JOIN SYSTEM 1
+drug 1 protein
+END 
+
+JOIN SYSTEM 2
+drug 2 protein
+END 
+
+...
+
+One the topology is knwon, it must be guessed which solute must
+   construct the trajectory based on the IPROC variable (as done 
+in read_setup). 
+
+
+ 2) In dumprs when save_all_restart is specified, then the routine
+   should write normally the restart file for restarting the REM while
+   save  restart must be accumulated in a RESTART_DIR (specified in
+   input mandatorly) with index runing from 1 to n for each system.  
+   taking the conf only form para0=1 replicas from all batteries.
+
+3) see also the multiple-system restart file for interrupted
+   alchemical run

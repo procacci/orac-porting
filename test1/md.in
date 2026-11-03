@@ -1,0 +1,101 @@
+#&T NTHREADS    8   CACHELINE   16    ! this is the numebr of OpenMP threads
+############################################################### 
+#  Solvated FKBP12 protein with 1j4i ligand. 
+#  Minimized Crystallographic structure from FKBP12
+###############################################################   
+# 
+# Set MD cell and read pdb coordinates 
+# 
+&SETUP  ! dimension of the box (can be any. Here is cubic)
+   CRYSTAL    55.04    55.04    55.04
+&END 
+&PARAMETERS ! reads force field for the system (solvated FKBP12 and a ligand) 
+   READ_TPG_ASCII ../ff/amber99sb-ildn.tpg
+   READ_TPG_ASCII ../ff/1j4i.tpg
+   READ_PRM_ASCII ../ff/amber99sb-ildn.prm
+   READ_PRM_ASCII ../ff/1j4i.prm
+   WRITE_TPGPRM_BIN  ../ff/1j4i.tpgprm
+   JOIN SOLUTE   
+      tst
+ gly-h val gln val glu thr ile ser pro gly asp gly arg
+ thr phe pro lys arg gly gln thr cysh val val hse tyr
+ thr gly met leu glu asp gly lys lys phe asp ser ser
+ arg asp arg asn lys pro phe lys phe met leu gly lys
+ gln glu val ile arg gly trp glu glu gly val ala gln
+ met ser val gly gln arg ala lys leu thr ile ser pro
+ asp tyr ala tyr gly ala thr gly hse pro gly ile ile
+ pro pro hse ala thr leu val phe asp val glu leu leu
+ lys leu glu-o
+   END                                                     
+   WRITE_TPGPRM_BIN  1j4i.tpgprm  ! this is written for restart
+   JOIN SOLVENT 
+       tip3       ! water model here is tip3p 
+   END          
+&END            
+&SOLUTE                                                                   
+   COORDINATES start.pdb   ! read the solute coordinate (ilgand + protein) 
+&END                                                                      
+&SOLVENT   ! generate the solvent replicating a water template
+   GENERATE   17  17  17
+   CELL  SC                                                               
+   INSERT 0.7                                                             
+   COORDINATES water.pdb 
+&END                                                                      
+&SIMULATION  !MD setup. Use Nose' for temperature and Parrinello-Rahman for pressure
+   MDSIM                                                                 
+   TEMPERATURE   298.0 20.0                                              
+   ISOSTRESS PRESS-EXT 0.1 BARO-MASS 30.0                                
+   THERMOS     
+      solute  10.0        
+      solvent 10.0        
+      cofm    10.0        
+      temp_limit 1000.0   
+   END
+&END                                                                     
+&INTEGRATOR   ! r-RESPA integrator (five time steps: two for bonded and three for nb)                                                                
+   TIMESTEP       15.0                                                   
+   MTS_RESPA                                                             
+      step intra 2                                                       
+      step intra 2                                                       
+      step nonbond 2  5.1                                                
+      step nonbond 5  7.8   reciprocal  ! note that reciprocal is in the IR shell
+      step nonbond 1  10.0                                                
+      ! test_times directive  produces a file with energies for checking energy conservation
+#     test_times OPEN  G0.tt 20 G0.tt is the reference output 
+      test_times OPEN  test1.G0.tt 20
+  END                                                                   
+&END                                                                     
+&POTENTIAL  ! potential-related nuances for this system (ewald setup, com-com restraint etc)
+   EWALD PME 0.37   48  48  48   4
+   ADD_STR_COM 
+       ligand     1      52
+       target    53    1715
+       force   0.05     8.7401    8.7402
+   END 
+   UPDATE      90.0   1.8                                                 
+   LINKED_CELL   18  18  18  ! LC neighbor list grid is specified here  
+   STRETCHING HEAVY
+   QQ-FUDGE  0.83333   ! amber fudge factor for 14 nonbonded
+   LJ-FUDGE  0.50       ! amber fudge factor for 14 nonbonded
+&END                                                                      
+&RUN   ! simulation time,                                                                    
+   CONTROL      0                                                        
+   PROPERTY     5000.0                                                    
+   REJECT       1500.0                                                    
+   TIME         1500.0     
+   STEER        0.0 15000.0                                               
+   PRINT        300.0                                                    
+&END                                                                     
+
+#
+# write restart file every 60.0 (approximately)
+#
+&INOUT                                                                   
+   RESTART   
+      write  15000.0  OPEN  md.rst    ! write the restart file                             
+   END 	
+   ASCII   3000.0 OPEN test1.md_1.pdb   ! printout trajectory file
+#  ASCII   3000.0 OPEN md_1.pdb   ! reference file 
+   PLOT STEER_ANALYTIC  500.0  OPEN test1.com.dat ! print ligand-protein com-com distance 
+#  PLOT STEER_ANALYTIC  500.0  OPEN com.dat ! reference file 
+&END                                                                     

@@ -1,0 +1,96 @@
+
+               oooooo       rrrrrrr        aaaaa          ccccccc
+             oooooooooo     rrrrrrrr     aaaaaaaaa       ccccccccc
+            ooo      ooo    rr    rrr    aaa   aaa      ccc
+            oo        oo    rr    rr    aaa     aaa     cc
+            oo        oo    rr rrr      aaaaaaaaaaa     cc
+            ooo      ooo    rr  rrr     aaaaaaaaaaa     ccc
+             oooooooooo     rr    rr    aa       aa      ccccccccc
+               oooooo       rr    rrr   aa       aa       ccccccc
+
+                              (Release 5)
+
+     "A Molecular Dynamics Program to Simulate Complex Molecular Systems"
+
+            Copyright(C) 1989 - 2011   M. Marchi and P. Procacci
+
+                           All Right Reserved
+
+
+   ORAC is provided "as is" and without any warranty express or implied.
+   The user assumes all risks of using ORAC.
+
+   The user may make copies of ORAC for his/her own use, and modify those
+   copies. The user MAY distribute any copy of the original or modified
+   source code to any users at any sites under the General Public License
+
+
+   Department of Chemistry, University of Firenze, Italy
+
+   http://www.chim.unifi.it/orac
+
+   Cite this program as:
+   S. Marsili, G. F. Signorini, R. Chelli, M. Marchi, P. Procacci
+   J. Comput. Chem. 2010, 31, 1106-1116
+
+
+          ========================================================
+          =                                                      =
+          =  O M P / M P I     O R A C     S T A R T E D         =
+          =                                                      =
+          =        TRAJECTORIES ARE    4                         =
+          =        FORCE PARALLELISM ON    2 PROCESSORS          =
+          ========================================================
+               ==== current simulation time =        150.0
+               ==== current simulation time =        300.0
+               ==== current simulation time =        450.0
+               ==== current simulation time =        600.0
+               ==== current simulation time =        750.0
+               ==== current simulation time =        900.0
+               ==== current simulation time =       1050.0
+               ==== current simulation time =       1200.0
+               ==== current simulation time =       1350.0
+               ==== current simulation time =       1500.0
+               ==== current simulation time =       1650.0
+               ==== current simulation time =       1800.0
+                                          Elaps.          CPU
+                     time(integr)  =      4.6363         9.1609     sec.
+                     time(cnst)    =      12.484         24.647     sec.
+                     time(intra NO)=      2.2279         4.4279     sec.
+                     time(intra N1)=      2.7326         5.4228     sec.
+                     time(inter M) =      24.969         49.630     sec.
+                     time(inter L) =      33.148         65.884     sec.
+                     time(inter H) =      3.8040         7.5606     sec.
+                     time(updte U) =      8.3736         3.1311     sec.
+                     time(recpr F) =      8.9378         17.640     sec.
+
+
+          ===========================================
+
+                Total cpu time for the run       =      201.23    
+                Total elapsed time for the run   =      102.19    
+                Averaged time per femtosecond    =        0.11180    
+                Averaged elapsed per femtosecond =        0.56771E-01
+
+
+
+          ===========================================
+
+
+
+     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     !                                                                      !
+     !                        PROGRAM COMPLETED                             !
+     !                                                                      !
+     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+          |--------------------------------------------------------------|
+          |    ``They're unfriendly.  Which is fortunate really;         |
+          |      they'd be difficult to love.''                          |
+          |                              . . . Avon    Blake's Seven     |
+          |                                                              |
+          |--------------------------------------------------------------|
+
+

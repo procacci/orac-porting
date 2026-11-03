@@ -1,0 +1,69 @@
+/*                             */ 
+/****   CONFIGURATION FILE *****/
+/*                             */ 
+
+/**** PARAMETERS THAT CONTROL THE GLOBAL DIMENSION  OF THE PROGRAM ******/ 
+
+#define   _SIT_SOLU_ 89374   /* Total number of atoms (solv+solu) in the system  */
+#define   _SIT_SOLV_ 25   /* Total number of atoms in the solv. mol.  */
+#define   _NRES_ 29791   /* Total number of residues (eff. residues + solvent mol) in the system */
+#define   _SLV_NRES_ 29791  /* Total Number of solvent molecules */
+
+#define   _SOLV_GROUP_ 20   /*  Total number of groups in one solvent molecule */
+#define   _TGROUP_ 29794   /* Total number of groups (this should be about 1/3 of SIT_SOLU*/ 
+#define   _MAX_GRID_  84  /* PME: max grid */   
+#define   _FFT1_ 84      /*  PME: max grid in k_a */
+#define   _FFT2_ 84      /*  PME: max grid in k_a */
+#define   _FFT3_ 84      /*  PME: max grid in k_a */
+#define   _N_PROT_MAX_ 89374   /* Total number of groups (this should be about 1/3 of SIT_SOLU*/ 
+#define   _NAT_PP_   249   /* Dimension ineighbor list _NAT_PP_*_TGROUP_*/
+  /* NB: 200 is compatible with standard densities and a Rc of 10 A */
+#define   _CELLMAX_ 830584 /* Maximum number of cell for linked cell neighbor list */ 
+#define   _INDMAX_  1500 /* Maximum number of cells surrounding the target cell in linked cell list */ 
+
+
+/** PARAMETERS THAT SHOULD BE FIXED AND WORKS FOR ALL SYSTEMS **/ 
+
+#define  _TYP_SOLU_	250     /* Number of residue types (e.g. aminoacids) in  the solute molecules */
+#define  _TYP_SOLV_	2        /* Number of types of the solvent molecule (usually one) */
+#define _TOT_RES_	252      /* Total number of residue available, i.e. how many residue types are used */
+#define _DIR_SPLINE_      6000     /* B-spline Dimensions for Direct sum*/
+#define _MORD_ 9                 /* PME: MAX B spline order */ 
+#define _HOOVER_	3        /* Number of Hoover chains  */
+#define _CONN_	        6         /* Total number of connection per atom in the connection table */
+#undef MAGIC /* Use magic number for cubic boundary conditions */
+#define  ANINT /* Use ANINT for cubic boundary conditions */
+#define _NBYTE_ 4
+
+
+/** PARAMETERS RELATED TO THE ANALYISIS                     **/
+
+#define  _MAX_BIN_      1000     /* Maximum bin dimension of the G(r) */
+#define  _LMAX_	        30      /* Standard Ewald  Recipracl space dimension Kx */
+#define  _MMAX_		30      /* Standard Ewald  Recipracl space dimension Ky */ 
+#define  _NMAX_		30      /* Standard Ewald  Recipracl space dimension Kz */
+#define  _ANL_TOPO_ 0    /* dimension of bond bends tors uesed by drive_analysis */
+#define  _TYP_SOLV_GOFR_   10    /* Types of solvent atoms used by gofr */
+#define _MAX_NEIGH_	350     /* Voronoi calculation: maximum number of neighbors */
+#define _MAX_IG_NNL_	10      /* Voronoi stuff */  
+#define   MAXPLA	50      /* Voronoi calculation: maximum number of faces */ 
+#define   MAXVER	250       /* Voronoi calculation: maximum number of vertices */ 
+#define   _CONTACT_VORONOI_    6  /* Voronoi calculation  */ 
+#define  _DLST_	1                 /* Residence time calc: #define  _DLST_	3500 */
+#define  _VIC_	1                 /*Total number of molecules counted for all the protein */
+#define  _DTM_	1               /* Number of ts for correlation time; Use for residence times*/
+#define _NAT_SOLV_	2      /*VACF: Atom of the solvent */
+#define _NAT_SOLU_	1      /*VACF: Atom of the solute */
+#define _MTS_NUM_CORR_  2
+#define _MTS_NUM_SPEC_  2
+#define _MTS_SUBUN_  2
+#define _NUM_CORR_	1   /* Number of correlation timestep to accumulate during the run */
+#define _SUBUN_	 _NRES_    /* Total number of subunits. To be used in analysis */
+#define _F1_	5         /* Respectively, number of fields*/ 
+#define _F2_	1  /*excluded fields*/
+#define _F3_	5   /* MAX number of atoms for each field */
+#define _BUFFER_ATOMS_   100     /* IO buffer routine; buffer lenght in atoms*/
+#define _BUFFER_TIME_    4096    /* IO buffer routine; buffer lenght in ts*/
+#define _BUFFER_FFT_     2*_BUFFER_TIME_  /* DoubleDIM for zero padding*/
+#define _DYNAMIC_DIM_   1000   /* dynamical matrix max dim for freq calc */
+#define _CHEB_ORDER_      6    /* order of cheybishev param for numerical derivatives*/

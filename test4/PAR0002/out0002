@@ -1,0 +1,757 @@
+
+               oooooo       rrrrrrr        aaaaa          ccccccc
+             oooooooooo     rrrrrrrr     aaaaaaaaa       ccccccccc
+            ooo      ooo    rr    rrr    aaa   aaa      ccc
+            oo        oo    rr    rr    aaa     aaa     cc
+            oo        oo    rr rrr      aaaaaaaaaaa     cc
+            ooo      ooo    rr  rrr     aaaaaaaaaaa     ccc
+             oooooooooo     rr    rr    aa       aa      ccccccccc
+               oooooo       rr    rrr   aa       aa       ccccccc
+
+                              (Release 5)
+
+     "A Molecular Dynamics Program to Simulate Complex Molecular Systems"
+
+            Copyright(C) 1989 - 2011   M. Marchi and P. Procacci
+
+                           All Right Reserved
+
+
+   ORAC is provided "as is" and without any warranty express or implied.
+   The user assumes all risks of using ORAC.
+
+   The user may make copies of ORAC for his/her own use, and modify those
+   copies. The user MAY distribute any copy of the original or modified
+   source code to any users at any sites under the General Public License
+
+
+   Department of Chemistry, University of Firenze, Italy
+
+   http://www.chim.unifi.it/orac
+
+   Cite this program as:
+   S. Marsili, G. F. Signorini, R. Chelli, M. Marchi, P. Procacci
+   J. Comput. Chem. 2010, 31, 1106-1116
+
+
+
+
+=========================== INPUT TO THE RUN ===================================
+=                                                                              =
+=#&T NTHREADS   2                                                              =
+=# #!&TST                                                                      =
+=&PARAMETERS                                                                   =
+=   READ_TPGPRM_BIN ../../test1/1j4i.tpgprm  ! read potential from tpgprm file =
+=&END                                                                          =
+=&SIMULATION                                                                   =
+=   MDSIM                                                                      =
+=   TEMPERATURE   300.0 40.0                                                   =
+=   ISOSTRESS PRESS-EXT 0.1 BARO-MASS 20.0                                     =
+=   THERMOS                                                                    =
+=       solute  20.0                                                           =
+=       solvent 20.0                                                           =
+=       cofm    20.0                                                           =
+=       temp_limit 8000.0                                                      =
+=   END                                                                        =
+=&END                                                                          =
+=&INTEGRATOR                                                                   =
+=   TIMESTEP       15.0                                                        =
+=   MTS_RESPA                                                                  =
+=      step intra 2                                                            =
+=      step intra 2                                                            =
+=      step nonbond 2  5.0  0.3 0.5                                            =
+=      step nonbond 5  8.1  0.3 0.5  reciprocal                                =
+=      step nonbond 1 12.5  0.3 1.5                                            =
+=   END                                                                        =
+=&END                                                                          =
+=                                                                              =
+=#                                                                             =
+=#  Run with Ewald and PME. Global fudge set on 1-4 interactions               =
+=#                                                                             =
+=                                                                              =
+=&POTENTIAL                                                                    =
+=   EWALD       PME    0.37  48 49 48   4                                      =
+=   UPDATE      60.0   1.5                                                     =
+=   LINKED_CELL  18 18 18   1                                                  =
+=   DEFINE_ALCHEMICAL_ATOM 1 52 off                                            =
+=   STEER_PATH ALCHEMY  ../15.off                                              =
+=   SHIFT-POT 4.0 0.35                                                         =
+=   ADD_STR_COM                                                                =
+=      ligand  1 52                                                            =
+=      target  53 1715                                                         =
+=      force   0.05  8.7                                                       =
+=   END                                                                        =
+=   STRETCHING HEAVY                                                           =
+=   QQ-FUDGE  0.83333                                                          =
+=   LJ-FUDGE  0.50                                                             =
+=&END                                                                          =
+=                                                                              =
+=&RUN                                                                          =
+=   CONTROL      2                                                             =
+=   PROPERTY     900000.0                                                      =
+=   REJECT       0.0                                                           =
+=   TIME         1500.0                                                        =
+=   PRINT        150.0                                                         =
+=&END                                                                          =
+=                                                                              =
+=#                                                                             =
+=# write restart file every 60.0 (approximately)                               =
+=#                                                                             =
+=&INOUT                                                                        =
+=   RESTART                                                                    =
+=    ! reads restart files produced in test1                                   =
+=    rmr ../../test2/b-RSTRT/ij4i -1                                           =
+=   END 	                                                                      =
+=   ASCII   1500.0 OPEN md_1.pdb                                               =
+=   PLOT FRAGMENT 150.0 OPEN ij4i.xyz                                          =
+=   PLOT ALCHEMY 60.0  OPEN  1.5.wrk                                           =
+=&END                                                                          =
+=&PROPERTIES                                                                   =
+=      DEF_FRAGMENT   1 1715                                                   =
+=&END                                                                          =
+=                                                                              =
+================================================================================
+
+
+     Checking Input ......              ---->
+
+  * * * W A R N I N G * * * 
+     BOX not given in &READ_SETUP                                                    
+**        Assumed box size is 500x500x500 Angs^3                                          
+
+
+ ********* W A R N I N G  W A R N I N G ************
+ *  1 ERRORS WHILE EXECUTING VERIFY_INPUT                                          
+ ******** Recoverable Error Program Continues ******
+
+
+
+
+
+          ====================================================
+          =                                                  =
+          =    O M P - M P I   O R A C   S T A R T E D       =
+          =                                                  =
+          =            NTRAJECTORIES ARE   4                 =
+          =  3rd level MAX threads     2 cache_line   8      =
+          =            1st level       2 cache_line   8      =
+          =            2nd level       2 cache_line   8      =
+          =            DYNAMIC THREADING F                   =
+          =            OMP TIMING    T                       =
+          ====================================================
+
+
+
+
+
+     <------ Reading Topology-Parameter File ------->
+
+
+     Found Charge  -1.00000 on Solute Molecule      1
+     Found Charge   1.00000 on Solute Molecule      2
+                 Old MAPNL dimension =     37460
+                 New map done for IPROC =   0
+                 New MAPNL dimension =     18717
+                 New map done for IPROC =   1
+                 New MAPNL dimension =     18743
+
+
+     <------ Reading Restart File ------->
+      -------../../test2/b-RSTRT/ij4i0001.rst--------
+     <------ Restart File Read in ------->
+
+
+
+
+
+********************************************************************************
+*                                                                              *
+*              I n p u t   O p e r a t i o n s   C o m p l e t e d             *
+*                                                                              *
+*              I n p u t   O p e r a t i o n s   C o m p l e t e d             *
+*                                                                              *
+*                                                                              *
+********************************************************************************
+
+
+
+
+
+================================================================================
+                    FORCE FIELD IS --> ambe
+   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =
+
+
+
+                      Adjusting bond length to Force Field.
+                           This will take a while...
+
+
+                    Constraint load balance
+
+              OMP_Task=    1   CNST_MAP_DIM=      9482
+              OMP_Task=    2   CNST_MAP_DIM=      9499
+
+
+
+==================== Added Topology (driven or not) starts here=================
+
+ -- Added COM restraint potential ---------
+
+          Ligand:          1 ---->         52
+          Target:         53 ---->       1715
+          kcom       0.05000 kcal mol-1 Angs-2
+          r0com      8.70000 Angs
+
+==================== Added Topology ends here =================================
+
+-------------------------------------------------------------------------------
+                    ====ALCHEMICAL TRANFORMATION===== 
+                         atom to be switched on   =   0
+                         atom to be switched off  =  52
+                         Ewald work               = F
+                         Print Ewald work         = F
+                         Intramol                 = F
+                         LJ on                    = F
+                    ====PATH DEFINITION AND TIME PROTOCOL====
+
+Time Slice   Time/ps  ====== l(add)LG  l(add)QQ  l(Rm)LG l(Rm)QQ  
+-------------------------------------------------------------------------------
+       1      0.00              0.000   0.000     0.000   0.000
+       2      0.60              0.000   0.000     0.000   1.000
+       3      0.90              0.000   0.000     0.660   1.000
+       4      1.50              0.000   0.000     1.000   1.000
+-------------------------------------------------------------------------------
+          SHIFT-POTENTIALS -> Sh_elec =   4.000    Sh_LJ =   0.350
+==================== Added Topology ends here =================================
+
+
+ starting value for driven of COM distance is     8.7000.   Actual value is     9.2594
+
+
+
+
+==============  FFTW LIBRARIES IS USED FOR PME  ================================
+
+
+
+
+*******************************************************************************
+*                                                                             *
+*         M.D. simulation for an aggregate composed of 1715 atoms             *
+*         and solvated in         4395 polyatomic molecules                   *
+*         M.D. simulation for an aggregate composed of 1715 atoms             *
+*         and solvated in         4395 polyatomic molecules                   *
+*         M.D. simulation for an aggregate composed of 1715 atoms             *
+*         and solvated in         4395 polyatomic molecules                   *
+*                                                                             *
+*******************************************************************************
+
+
+==============  P A R A M E T E R S    F O R   T H E    R U N  =================
+
+
+           The Simulation will be run starting from a RESTART file.
+                         Averages will NOT be zeroed. 
+           Reject =     0 H-Steps     Run =   100 H-Steps
+           Maxrun =     0 H-Steps
+
+           Save Subaverages every  60000 M-Steps
+           Save Restart file every     0 H-Steps
+           Save PLOT file every        0 M-Steps
+           Save PDB  file every     1000 M-Steps
+           Save DUMP file every        0 M-Steps
+
+          potential truncation distance =12.8000 ang
+
+          time-step = 1.5000E+01 fs.
+
+-------------------------- Statistical Ensemble --------------------------------
+
+              ** isotropic N P T **
+
+           Number of atoms   = 14900
+
+                    CO-matrix
+
+                         27.05097   0.00000   0.00000
+                          0.00000  27.05097   0.00000
+                          0.00000   0.00000  27.05097
+
+           Volume            =     158357.370  Ang**3
+
+           Barostat mass     =       5621.958  u.m.a.
+
+           External pressure =          0.100  MPa   
+
+           Temperature       =        300.000  Kelvin
+
+ 1 Thermostat Mass (cofm)    =     463697.419 a.m.u. A**2
+ 2 Thermostat Mass (solute)  =     150547.002 a.m.u. A**2
+ 3 Thermostat Mass (solvent) =     463451.370 a.m.u. A**2
+
+
+ 1 Thermostat Ndf (cofm)    =   13192        Coordinates 
+ 2 Thermostat Ndf (solute)  =    4283        Coordinates 
+ 3 Thermostat Ndf (solvent) =   13185        Coordinates 
+
+
+-------------------------  Non Bonded Potential --------------------------------
+
+           PME    :  alpha  =    0.370 AA^-1     grid =    48   49   48
+                     order  =      4
+
+           r-RESPA: N0-time =    0.375 fs 
+                    N1-time =    0.750 fs 
+                     M-time =    1.500 fs 
+                     L-time =    3.000 fs 
+                     H-time =   15.000 fs 
+
+           r-RESPA:  M-cut  =    5.000 AA --  0.30  0.50 lskip_ew =F
+                     L-cut  =    8.100 AA --  0.30  0.50 lskip_ew =F
+                     H-cut  =   12.500 AA --  0.30  1.50 lskip_ew =T
+           r-RESPA: shl-pme =       l
+
+----------------------------- Neighbor List ------------------------------------
+
+           UPDATE every     4 Steps
+
+           Dispersion+Electrostatics  rspcut  =    14.30
+
+
+
+     ************************************************************************
+     *                        System  TOPOLOGY  List                        *
+     *                                                                      *
+     *           14900 Atoms         14919 Bonds        878 FLexible Bonds  *
+     *           14041 Rigid Bonds    3141 Angles      5732 P-Torsions      *
+     *             388 I-Torsions     4500 1-4 Inter.  5082 Atomic Groups   *
+     *            4503 Units          4397 Molecules                        *
+     *                                                                      *
+     ************************************************************************
+
+
+
+================================================================================
+
+
+
+
+
+********************************************************************************
+*                                                                              *
+*                M . D.   I n t e r m e d i a t e   R e s u l t s              *
+*                                                                              *
+*                M . D.   I n t e r m e d i a t e   R e s u l t s              *
+*                                                                              *
+*                                                                              *
+********************************************************************************
+
+
+
+
+     CPU and elapse time for linked cell indexing =    0.52985        0.26537    
+
+     Average Neighbor Lists Dimension ->        508201.5 +/-         3045.5
+
+     CPU and elapse time for update          =    0.24194        0.12096    
+
+
+
+          * * * * r - R E S P A  i s  O N  * * * *
+
+
+
+-------------------------------------------------------------------------------
+                    Coordinate check
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+================================================================================
+=                                                                              =
+=  Initial coordinates OK!                                                     =
+=  Shortest distance        0.957 between atoms  7974   7976                   =
+=                                                                              =
+================================================================================
+
+     CPU  time for m-contribution: RECP =     0.0000     DIR =    0.52428E-01 TOT =    0.52428E-01
+     elps time for m-contribution: RECP =     0.0000     DIR =    0.26615E-01 TOT =    0.26615E-01
+
+     CPU  time for l-contribution: RECP =    0.38477E-01 DIR =    0.16422     TOT =    0.20270    
+     elps time for l-contribution: RECP =    0.21668E-01 DIR =    0.83345E-01 TOT =    0.10501    
+
+     CPU  time for h-contribution: RECP =     0.0000     DIR =    0.17980     TOT =    0.17980    
+     elps time for h-contribution: RECP =     0.0000     DIR =    0.90497E-01 TOT =    0.90497E-01
+
+     THEORIC SPEED UP FOR NON BONDED PART =     2.519
+
+     CPU  time for n1-contribution  =    0.19290E-02
+     elps time for n1-contribution  =    0.13082E-02
+
+     CPU  time for n0-contribution  =    0.39600E-03
+     elps time for n0-contribution  =    0.39600E-03
+
+     OVERALL THEORIC SPEED UP =     9.693
+
+
+     Expected ELAPSED time for the RUN:   0 hours and  1 min
+
+      Expected average time per M step:    0.95396E-01 sec.
+
+      Expected average time per femto :    0.63597E-01 sec.
+
+
+          ===========================================
+
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        509146.5 +/-         3142.6
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        510859.5 +/-         3133.7
+ QQ-Alchemical transformation (remove) in progress:   25.00% done...
+
+
+           Tstep    =       150.0 Total    =  -143259.24 SlvPot   =  -169941.01
+           SlvNonbd =  -169941.01 SlvCoul  =  -195945.02 SlvBnded =        0.00
+           SlvStr   =        0.00 SlvBend  =        0.00 SlvPtor  =        0.00
+           SlvItor  =        0.00 SltTot   =    -4247.54 SltPot   =   -9508.681
+           SltCoul  =   -16916.65 SltL-J   =    -1801.52 SltHyd   =        0.00
+           SltBond  =     9209.50 SltStr   =     1183.15 SltBen   =     3678.38
+           SltItor  =      241.02 SltPtor  =     4106.88 S-SPot   =   -4493.791
+           S-SCoul  =    -3419.30 SltTemp  =      295.07 TrasTem  =      316.99
+           RestTemp =      305.28 TotTemp  =      310.32 Hoover   =     1812.32
+
+           TotPre   =      -10.28 ConPre   =     -132.97 KinPre   =      122.70
+           TmpPre   =     8966.67 Volume   =   156839.61 PV       =      9.4451
+        .....  cell parameters  ....             ....       stress    .....
+ XYZ    53.9285    53.9285    53.9285       -31.7223     -10.3188       3.2716
+ ABC    90.0000    90.0000    90.0000         2.6946      18.1074      11.6050
+       ........   ........   ........         2.4831      -3.2653       3.3390
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        512627.5 +/-         3205.7
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        514613.5 +/-         3190.7
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        516412.5 +/-         3362.0
+ QQ-Alchemical transformation (remove) in progress:   50.00% done...
+
+
+           Tstep    =       300.0 Total    =  -143182.89 SlvPot   =  -170237.96
+           SlvNonbd =  -170237.96 SlvCoul  =  -196511.95 SlvBnded =        0.00
+           SlvStr   =        0.00 SlvBend  =        0.00 SlvPtor  =        0.00
+           SlvItor  =        0.00 SltTot   =    -4145.77 SltPot   =   -9284.499
+           SltCoul  =   -16816.01 SltL-J   =    -1790.22 SltHyd   =        0.00
+           SltBond  =     9321.73 SltStr   =     1373.01 SltBen   =     3579.45
+           SltItor  =      271.52 SltPtor  =     4097.68 S-SPot   =   -4820.638
+           S-SCoul  =    -3629.73 SltTemp  =      288.20 TrasTem  =      311.80
+           RestTemp =      303.96 TotTemp  =      307.34 Hoover   =     5483.50
+
+           TotPre   =      -11.17 ConPre   =     -133.16 KinPre   =      121.98
+           TmpPre   =     8241.47 Volume   =   155174.76 PV       =      9.3448
+        .....  cell parameters  ....             ....       stress    .....
+ XYZ    53.7370    53.7370    53.7370       -11.3217      -1.4675      11.3663
+ ABC    90.0000    90.0000    90.0000        -3.4736      -4.2067       2.9872
+       ........   ........   ........        -0.6912      10.9122       4.3551
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        518368.5 +/-         3539.8
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        520076.0 +/-         3512.8
+ QQ-Alchemical transformation (remove) in progress:   75.00% done...
+
+
+           Tstep    =       450.0 Total    =  -143107.30 SlvPot   =  -171351.48
+           SlvNonbd =  -171351.48 SlvCoul  =  -197637.32 SlvBnded =        0.00
+           SlvStr   =        0.00 SlvBend  =        0.00 SlvPtor  =        0.00
+           SlvItor  =        0.00 SltTot   =    -4065.33 SltPot   =   -9270.713
+           SltCoul  =   -16782.27 SltL-J   =    -1786.02 SltHyd   =        0.00
+           SltBond  =     9297.57 SltStr   =     1261.55 SltBen   =     3729.41
+           SltItor  =      222.41 SltPtor  =     4084.14 S-SPot   =   -4659.813
+           S-SCoul  =    -3605.73 SltTemp  =      291.94 TrasTem  =      306.93
+           RestTemp =      304.54 TotTemp  =      305.57 Hoover   =     9541.41
+
+           TotPre   =       15.54 ConPre   =     -105.68 KinPre   =      121.21
+           TmpPre   =     3625.48 Volume   =   153717.93 PV       =      9.2571
+        .....  cell parameters  ....             ....       stress    .....
+ XYZ    53.5683    53.5683    53.5683        10.7342     -10.7958       4.3810
+ ABC    90.0000    90.0000    90.0000        -0.8717       6.4575      12.9217
+       ........   ........   ........        -9.3457       4.4373      -1.6540
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        521511.0 +/-         3437.7
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        522479.0 +/-         3327.4
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        523217.0 +/-         3189.7
+ QQ-Alchemical transformation (remove) in progress:  100.00% done...
+
+
+           Tstep    =       600.0 Total    =  -143089.17 SlvPot   =  -172114.35
+           SlvNonbd =  -172114.35 SlvCoul  =  -198444.26 SlvBnded =        0.00
+           SlvStr   =        0.00 SlvBend  =        0.00 SlvPtor  =        0.00
+           SlvItor  =        0.00 SltTot   =    -3908.07 SltPot   =   -9252.047
+           SltCoul  =   -16788.96 SltL-J   =    -1878.13 SltHyd   =        0.00
+           SltBond  =     9415.05 SltStr   =     1289.46 SltBen   =     3694.37
+           SltItor  =      247.20 SltPtor  =     4183.91 S-SPot   =   -4981.608
+           S-SCoul  =    -4011.12 SltTemp  =      299.71 TrasTem  =      304.02
+           RestTemp =      301.56 TotTemp  =      302.62 Hoover   =    11777.64
+
+           TotPre   =        0.74 ConPre   =     -120.05 KinPre   =      120.79
+           TmpPre   =     2008.48 Volume   =   152792.69 PV       =      9.2014
+        .....  cell parameters  ....             ....       stress    .....
+ XYZ    53.4606    53.4606    53.4606        12.9171      -3.2321      -4.8090
+ ABC    90.0000    90.0000    90.0000         0.1628     -14.4117      -0.3703
+       ........   ........   ........       -13.0786      -1.2669       2.2356
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        524294.5 +/-         3361.1
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        525297.5 +/-         3316.4
+ LJ-Alchemical transformation (remove) in progress:   33.00% done...
+ QQ-Alchemical transformation (remove) in progress:  100.00% done...
+
+
+           Tstep    =       750.0 Total    =  -142995.44 SlvPot   =  -173045.49
+           SlvNonbd =  -173045.49 SlvCoul  =  -200035.47 SlvBnded =        0.00
+           SlvStr   =        0.00 SlvBend  =        0.00 SlvPtor  =        0.00
+           SlvItor  =        0.00 SltTot   =    -3864.56 SltPot   =   -9171.984
+           SltCoul  =   -16842.89 SltL-J   =    -1734.53 SltHyd   =        0.00
+           SltBond  =     9405.44 SltStr   =     1279.28 SltBen   =     3743.43
+           SltItor  =      245.98 SltPtor  =     4136.65 S-SPot   =   -4737.545
+           S-SCoul  =    -3778.97 SltTemp  =      297.66 TrasTem  =      298.58
+           RestTemp =      294.32 TotTemp  =      296.15 Hoover   =    12033.95
+
+           TotPre   =       26.22 ConPre   =      -93.12 KinPre   =      119.34
+           TmpPre   =     2641.09 Volume   =   151892.33 PV       =      9.1472
+        .....  cell parameters  ....             ....       stress    .....
+ XYZ    53.3554    53.3554    53.3554        15.2460      -6.2882       5.4029
+ ABC    90.0000    90.0000    90.0000        -7.8832       9.6429       5.1734
+       ........   ........   ........        22.9727       5.2424       1.3275
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        526412.5 +/-         3398.7
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        527291.0 +/-         3476.3
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        527779.5 +/-         3441.6
+ LJ-Alchemical transformation (remove) in progress:   66.00% done...
+ QQ-Alchemical transformation (remove) in progress:  100.00% done...
+
+
+           Tstep    =       900.0 Total    =  -142935.47 SlvPot   =  -174213.10
+           SlvNonbd =  -174213.10 SlvCoul  =  -201442.74 SlvBnded =        0.00
+           SlvStr   =        0.00 SlvBend  =        0.00 SlvPtor  =        0.00
+           SlvItor  =        0.00 SltTot   =    -3730.36 SltPot   =   -9258.071
+           SltCoul  =   -16817.12 SltL-J   =    -1668.07 SltHyd   =        0.00
+           SltBond  =     9227.12 SltStr   =     1256.72 SltBen   =     3680.62
+           SltItor  =      262.40 SltPtor  =     4027.26 S-SPot   =   -4805.726
+           S-SCoul  =    -3713.67 SltTemp  =      310.02 TrasTem  =      294.02
+           RestTemp =      296.41 TotTemp  =      295.38 Hoover   =    11232.92
+
+           TotPre   =        3.14 ConPre   =     -114.87 KinPre   =      118.01
+           TmpPre   =      628.54 Volume   =   151254.11 PV       =      9.1087
+        .....  cell parameters  ....             ....       stress    .....
+ XYZ    53.2806    53.2806    53.2806         2.2279      -1.5078       5.1811
+ ABC    90.0000    90.0000    90.0000         0.5272     -10.9446      -2.4214
+       ........   ........   ........       -12.7368       2.2788      11.8583
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        528174.5 +/-         3581.9
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        529058.0 +/-         3529.4
+ LJ-Alchemical transformation (remove) in progress:   74.50% done...
+ QQ-Alchemical transformation (remove) in progress:  100.00% done...
+
+
+           Tstep    =      1050.0 Total    =  -142922.94 SlvPot   =  -175082.02
+           SlvNonbd =  -175082.02 SlvCoul  =  -201383.58 SlvBnded =        0.00
+           SlvStr   =        0.00 SlvBend  =        0.00 SlvPtor  =        0.00
+           SlvItor  =        0.00 SltTot   =    -3550.54 SltPot   =   -8974.486
+           SltCoul  =   -16769.78 SltL-J   =    -1696.27 SltHyd   =        0.00
+           SltBond  =     9491.56 SltStr   =     1242.83 SltBen   =     3888.66
+           SltItor  =      238.98 SltPtor  =     4120.96 S-SPot   =   -4935.984
+           S-SCoul  =    -4146.59 SltTemp  =      304.20 TrasTem  =      287.05
+           RestTemp =      294.37 TotTemp  =      291.22 Hoover   =     6915.74
+
+           TotPre   =      -17.27 ConPre   =     -133.01 KinPre   =      115.74
+           TmpPre   =     2490.46 Volume   =   150557.96 PV       =      9.0668
+        .....  cell parameters  ....             ....       stress    .....
+ XYZ    53.1987    53.1987    53.1987       -20.4287       8.7634      -5.4774
+ ABC    90.0000    90.0000    90.0000        12.1630      10.8900      15.8517
+       ........   ........   ........       -12.8822      -1.9553      -7.7335
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        530162.5 +/-         3673.6
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        531491.0 +/-         3706.0
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        532854.5 +/-         3865.4
+ LJ-Alchemical transformation (remove) in progress:   83.00% done...
+ QQ-Alchemical transformation (remove) in progress:  100.00% done...
+
+
+           Tstep    =      1200.0 Total    =  -142910.61 SlvPot   =  -175691.88
+           SlvNonbd =  -175691.88 SlvCoul  =  -203340.85 SlvBnded =        0.00
+           SlvStr   =        0.00 SlvBend  =        0.00 SlvPtor  =        0.00
+           SlvItor  =        0.00 SltTot   =    -3576.29 SltPot   =   -9036.953
+           SltCoul  =   -16854.81 SltL-J   =    -1692.92 SltHyd   =        0.00
+           SltBond  =     9510.78 SltStr   =     1351.71 SltBen   =     3820.82
+           SltItor  =      245.40 SltPtor  =     4092.65 S-SPot   =   -5164.555
+           S-SCoul  =    -4202.94 SltTemp  =      306.26 TrasTem  =      285.42
+           RestTemp =      295.77 TotTemp  =      291.32 Hoover   =     3290.52
+
+           TotPre   =       19.71 ConPre   =      -96.21 KinPre   =      115.92
+           TmpPre   =     3703.00 Volume   =   149475.72 PV       =      9.0016
+        .....  cell parameters  ....             ....       stress    .....
+ XYZ    53.0710    53.0710    53.0710         4.5073      -4.1336      -9.2228
+ ABC    90.0000    90.0000    90.0000       -11.1321       5.6089      16.0783
+       ........   ........   ........         4.9499      -8.1790       9.5945
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        534329.0 +/-         3605.3
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        535560.0 +/-         3561.1
+ LJ-Alchemical transformation (remove) in progress:   91.50% done...
+ QQ-Alchemical transformation (remove) in progress:  100.00% done...
+
+
+           Tstep    =      1350.0 Total    =  -142920.16 SlvPot   =  -176594.49
+           SlvNonbd =  -176594.49 SlvCoul  =  -204615.31 SlvBnded =        0.00
+           SlvStr   =        0.00 SlvBend  =        0.00 SlvPtor  =        0.00
+           SlvItor  =        0.00 SltTot   =    -3431.89 SltPot   =   -9038.321
+           SltCoul  =   -16836.71 SltL-J   =    -1605.66 SltHyd   =        0.00
+           SltBond  =     9404.05 SltStr   =     1372.32 SltBen   =     3686.07
+           SltItor  =      226.73 SltPtor  =     4118.67 S-SPot   =   -4975.119
+           S-SCoul  =    -3921.72 SltTemp  =      314.43 TrasTem  =      286.04
+           RestTemp =      297.35 TotTemp  =      292.48 Hoover   =      854.38
+
+           TotPre   =       14.68 ConPre   =     -102.23 KinPre   =      116.91
+           TmpPre   =     2510.16 Volume   =   148530.64 PV       =      8.9447
+        .....  cell parameters  ....             ....       stress    .....
+ XYZ    52.9589    52.9589    52.9589         4.6348      -8.8346      -5.0399
+ ABC    90.0000    90.0000    90.0000        -6.8780      10.6315      -3.9446
+       ........   ........   ........        -8.9080       3.4325      -0.5857
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        536830.0 +/-         3507.9
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        537681.5 +/-         3251.2
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        537840.0 +/-         3193.6
+ LJ-Alchemical transformation (remove) in progress:  100.00% done...
+ QQ-Alchemical transformation (remove) in progress:  100.00% done...
+
+
+           Tstep    =      1500.0 Total    =  -142885.82 SlvPot   =  -176495.43
+           SlvNonbd =  -176495.43 SlvCoul  =  -204801.72 SlvBnded =        0.00
+           SlvStr   =        0.00 SlvBend  =        0.00 SlvPtor  =        0.00
+           SlvItor  =        0.00 SltTot   =    -3523.32 SltPot   =   -9000.075
+           SltCoul  =   -16943.64 SltL-J   =    -1601.69 SltHyd   =        0.00
+           SltBond  =     9545.26 SltStr   =     1336.78 SltBen   =     3933.55
+           SltItor  =      229.10 SltPtor  =     4045.51 S-SPot   =   -4953.292
+           S-SCoul  =    -3991.69 SltTemp  =      307.16 TrasTem  =      288.89
+           RestTemp =      290.26 TotTemp  =      289.67 Hoover   =       45.53
+
+           TotPre   =       38.97 ConPre   =      -79.41 KinPre   =      118.38
+           TmpPre   =      211.13 Volume   =   148143.73 PV       =      8.9214
+        .....  cell parameters  ....             ....       stress    .....
+ XYZ    52.9128    52.9128    52.9128        -5.0166      20.7678     -12.5534
+ ABC    90.0000    90.0000    90.0000         4.0345      30.3423       4.4245
+       ........   ........   ........        -5.2842      10.2163      13.6486
+                                          Elaps.          CPU
+                     time(integr)  =      3.6796         6.9865     sec.
+                     time(cnst)    =      10.204         19.984     sec.
+                     time(intra NO)=      1.6551         3.2561     sec.
+                     time(intra N1)=      2.3620         4.6836     sec.
+                     time(inter M) =      26.550         52.508     sec.
+                     time(inter L) =      43.893         86.858     sec.
+                     time(inter H) =      9.8930         19.589     sec.
+                     time(updte U) =      12.825         6.2512     sec.
+                     time(recpr F) =      8.8178         16.879     sec.
+
+
+          ===========================================
+
+                Total cpu time for the run       =      231.38    
+                Total elapsed time for the run   =      117.50    
+                Averaged time per femtosecond    =        0.15426    
+                Averaged elapsed per femtosecond =        0.78336E-01
+
+
+
+          ===========================================
+
+
+
+     ************************************************************************
+     *                                                                      *
+     *                        PROGRAM COMPLETED                             *
+     *                                                                      *
+     ************************************************************************
+

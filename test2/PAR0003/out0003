@@ -1,0 +1,1124 @@
+
+               oooooo       rrrrrrr        aaaaa          ccccccc
+             oooooooooo     rrrrrrrr     aaaaaaaaa       ccccccccc
+            ooo      ooo    rr    rrr    aaa   aaa      ccc
+            oo        oo    rr    rr    aaa     aaa     cc
+            oo        oo    rr rrr      aaaaaaaaaaa     cc
+            ooo      ooo    rr  rrr     aaaaaaaaaaa     ccc
+             oooooooooo     rr    rr    aa       aa      ccccccccc
+               oooooo       rr    rrr   aa       aa       ccccccc
+
+                              (Release 5)
+
+     "A Molecular Dynamics Program to Simulate Complex Molecular Systems"
+
+            Copyright(C) 1989 - 2011   M. Marchi and P. Procacci
+
+                           All Right Reserved
+
+
+   ORAC is provided "as is" and without any warranty express or implied.
+   The user assumes all risks of using ORAC.
+
+   The user may make copies of ORAC for his/her own use, and modify those
+   copies. The user MAY distribute any copy of the original or modified
+   source code to any users at any sites under the General Public License
+
+
+   Department of Chemistry, University of Firenze, Italy
+
+   http://www.chim.unifi.it/orac
+
+   Cite this program as:
+   S. Marsili, G. F. Signorini, R. Chelli, M. Marchi, P. Procacci
+   J. Comput. Chem. 2010, 31, 1106-1116
+
+
+
+
+=========================== INPUT TO THE RUN ===================================
+=                                                                              =
+=#&T NTHREADS    2   ! this is the numebr of OpenMP threads                    =
+=###############################################################               =
+=#  Solvated FKBP12 protein with 1j4i ligand.                                  =
+=#  Minimized Crystallographic structure from FKBP12                           =
+=###############################################################               =
+=#                                                                             =
+=# Set MD cell and read pdb coordinates                                        =
+=#                                                                             =
+=&REM                                                                          =
+=   BATTERIES 1                                                                =
+=! ST scaling   bonded      torsion      nonbonded                             =
+=   SETUP       1.0           0.6         0.6         1                        =
+=   STEP 60.                                                                   =
+=   PRINT_DIAGNOSTIC 1500.                                                     =
+=   SEGMENT                                                                    =
+=      define     1    52    ! lig    1                                        =
+=      define   430   444    ! TYR27                                           =
+=      kind both   ! solute-solvent also scaled                                =
+=  END                                                                         =
+=  PRINT 12000                                                                 =
+=  PRINT_ENERGY 1500.0 OPEN 1.rem                                              =
+=&END                                                                          =
+=&SETUP  ! dimension of the box (can be any. Here is cubic)                    =
+=   READ_PDB ../start.pdb                                                      =
+=   CRYSTAL    55.04    55.04    55.04                                         =
+=&END                                                                          =
+=&PARAMETERS ! reads force field for the system (solvated FKBP12 and a ligand) =
+=   READ_TPG_ASCII ../../ff/amber99sb-ildn.tpg                                 =
+=   READ_TPG_ASCII ../../ff/1j4i.tpg                                           =
+=   READ_PRM_ASCII ../../ff/amber99sb-ildn.prm                                 =
+=   READ_PRM_ASCII ../../ff/1j4i.prm                                           =
+=   WRITE_TPGPRM_BIN  ../../ff/1j4i.tpgprm                                     =
+=   JOIN SOLUTE                                                                =
+=      tst                                                                     =
+= gly-h val gln val glu thr ile ser pro gly asp gly arg                        =
+= thr phe pro lys arg gly gln thr cysh val val hse tyr                         =
+= thr gly met leu glu asp gly lys lys phe asp ser ser                          =
+= arg asp arg asn lys pro phe lys phe met leu gly lys                          =
+= gln glu val ile arg gly trp glu glu gly val ala gln                          =
+= met ser val gly gln arg ala lys leu thr ile ser pro                          =
+= asp tyr ala tyr gly ala thr gly hse pro gly ile ile                          =
+= pro pro hse ala thr leu val phe asp val glu leu leu                          =
+= lys leu glu-o                                                                =
+=   END                                                                        =
+=   WRITE_TPGPRM_BIN  1j4i.tpgprm  ! this is written for restart               =
+=   JOIN SOLVENT                                                               =
+=       tip3       ! water model here is tip3p                                 =
+=   END                                                                        =
+=&END                                                                          =
+=&SOLVENT   ! generate the solvent replicating a water template                =
+=    ADD_UNITS 4395                                                            =
+=&END                                                                          =
+=&SIMULATION  !MD setup. Use Nose' for temperature and Parrinello-Rahman for pr=
+=   MDSIM                                                                      =
+=   TEMPERATURE   298.0 20.0                                                   =
+=   ISOSTRESS PRESS-EXT 0.1 BARO-MASS 30.0                                     =
+=   THERMOS                                                                    =
+=      solute  10.0                                                            =
+=      solvent 10.0                                                            =
+=      cofm    10.0                                                            =
+=      temp_limit 1000.0                                                       =
+=   END                                                                        =
+=&END                                                                          =
+=&INTEGRATOR   ! r-RESPA integrator (five time steps: two for bonded and three =
+=   TIMESTEP       15.0                                                        =
+=   MTS_RESPA                                                                  =
+=      step intra 2                                                            =
+=      step intra 2                                                            =
+=      step nonbond 2  5.1                                                     =
+=      step nonbond 5  7.8   reciprocal  ! note that reciprocal is in the IR sh=
+=      step nonbond 1  10.0                                                    =
+=      ! test_times directive  produces a file with energies for checking energ=
+=      test_times OPEN  G0.tt 20                                               =
+=  END                                                                         =
+=&END                                                                          =
+=&POTENTIAL  ! potential-related nuances for this system (ewald setup, com-com =
+=   EWALD PME 0.37   48  48  48   4                                            =
+=   ADD_STR_COM                                                                =
+=       ligand     1      52                                                   =
+=       target    53    1715                                                   =
+=       force   0.05     8.7401    8.7402                                      =
+=   END                                                                        =
+=   UPDATE      90.0   1.8                                                     =
+=   LINKED_CELL   18  18  18  ! LC neighbor list grid is specified here        =
+=   STRETCHING HEAVY                                                           =
+=   QQ-FUDGE  0.83333   ! amber fudge factor for 14 nonbonded                  =
+=   LJ-FUDGE  0.50      ! amber fudge factor for 14 nonbonded                  =
+=&END                                                                          =
+=&RUN   ! simulation time,                                                     =
+=   CONTROL      0                                                             =
+=   PROPERTY     5000.0                                                        =
+=   REJECT       900.0                                                         =
+=   TIME         900.0                                                         =
+=   PRINT        150.0                                                         =
+=&END                                                                          =
+=                                                                              =
+=#                                                                             =
+=# write restart file every 60.0 (approximately)                               =
+=#                                                                             =
+=&INOUT                                                                        =
+=   RESTART                                                                    =
+=      write  450.0 SAVE_ALL_FILES ../b-RSTRT/ij4i                             =
+=   END                                                                        =
+=   PLOT FRAGMENT 1000.0 OPEN ij4i.xyz                                         =
+=   ASCII   2000.0 OPEN md_1.pdb   ! printout trajectory file with water       =
+=&END                                                                          =
+=&PROPERTIES                                                                   =
+=      DEF_FRAGMENT   1 1715   ! define atoms for xyz file                     =
+=&END                                                                          =
+=                                                                              =
+================================================================================
+
+
+     Checking Input ......              ---->
+     Input OK!!
+
+
+
+          ====================================================
+          =                                                  =
+          =    O M P - M P I   O R A C   S T A R T E D       =
+          =                                                  =
+          =            NTRAJECTORIES ARE   4                 =
+          =  3rd level MAX threads     2 cache_line   8      =
+          =            1st level       2 cache_line   8      =
+          =            2nd level       2 cache_line   8      =
+          =            DYNAMIC THREADING F                   =
+          =            OMP TIMING    T                       =
+          ====================================================
+
+
+
+
+   ========================================================================
+   =                                                                      =
+   =                 SOLUTE:   Assembling Molecules                       =
+   =                                                                      =
+   ========================================================================
+
+     SOLUTE:  Linking the molecule together      ---->
+     SOLUTE:  Adding extra links                 ---->
+     SOLUTE:  Searching for Bonds                ---->
+     SOLUTE:  Searching for Bendings             ---->
+     SOLUTE:  Searching for Bendings to Omit     ---->
+     SOLUTE:  Assigning a Type to Each Atom      ---->
+     SOLUTE:  Find All Possible 1-4 Interactions ---->
+     SOLUTE:  Searching for Bond Parameters  ---->
+     SOLUTE:  Searching for Bendings Parameters  ---->
+     SOLUTE:  Pick rigid fragments that Match Input  ---->
+     SOLUTE:  Add extra P-Torsions               ---->
+     SOLUTE:  Match P-Torsions with Parameters   ---->
+     SOLUTE:  Pick I-Torsions that Match Input   ---->
+     SOLUTE:  Add extra I-Torsions               ---->
+     SOLUTE:  Match I-Torsions with Parameters   ---->
+
+  ************************************************************************
+  *                   SOLUTE:    Initial TOPOLOGY  List                  *
+  *                                                                      *
+  *            1715 Atoms          1734 Bonds       1734 FLexible Bonds  *
+  *               0 Rigid Bonds    3141 Angles      5732 P-Torsions      *
+  *             339 I-Torsions     4500 1-4 Inter.                       *
+  *                                                                      *
+  ************************************************************************
+
+
+   ========================================================================
+   =                                                                      =
+   =                 SOLVENT:  Assembling Molecules                       =
+   =                                                                      =
+   ========================================================================
+
+     SOLVENT: Linking the molecule together      ---->
+     SOLVENT: Searching for Bonds                ---->
+     SOLVENT: Searching for Bendings             ---->
+     SOLVENT: Searching for Bendings to Omit     ---->
+     SOLVENT: Assigning a Type to Each Atom      ---->
+     SOLVENT: Find All Possible 1-4 Interactions ---->
+     SOLVENT: Searching for Bond Parameters  ---->
+     SOLVENT: Searching for Bendings Parameters  ---->
+     SOLVENT: Pick rigid fragments that Match Input  ---->
+     SOLVENT: Match P-Torsions with Parameters   ---->
+     SOLVENT: Pick I-Torsions that Match Input   ---->
+     SOLVENT: Match I-Torsions with Parameters   ---->
+
+  ************************************************************************
+  *                   SOLVENT:   Initial TOPOLOGY  List                  *
+  *                                                                      *
+  *               3 Atoms             3 Bonds          3 FLexible Bonds  *
+  *               0 Rigid Bonds       0 Angles         0 P-Torsions      *
+  *               0 I-Torsions        0 1-4 Inter.                       *
+  *                                                                      *
+  ************************************************************************
+
+
+   ========================================================================
+   =                                                                      =
+   =                 Setting up the Simulation Box                        =
+   =                                                                      =
+   ========================================================================
+
+
+
+                    ==========================================
+                    =       Reading System Coordinates       =
+                    ==========================================
+
+
+     Reading the PDB file               ---->../start.pdb
+
+
+     ===========================================================================
+     =    PDB file parsed: 14900 atoms; -      0 hydrogens to be assigned      =
+     =               Successful reading of the pdb file                        =
+     ===========================================================================
+
+
+                    Solute Center of Mass coordinates at 
+                          -0.152      -0.125      -0.305
+
+     Found Charge  -1.00000 on Solute Molecule      1
+     Found Charge   1.00000 on Solute Molecule      2
+
+
+  ************************************************************************
+  *                        New TOPOLOGY  List                            *
+  *                                                                      *
+  *            4395 Solvent Mol       3 Atoms Each     2 Solute Mol.     *
+  *                                                                      *
+  *                            For the Sysyem                            *
+  *                                                                      *
+  *           14900 Atoms         14919 Bonds        878 FLexible Bonds  *
+  *           14041 Rigid Bonds    3141 Angles      5732 P-Torsions      *
+  *             339 I-Torsions     4500 1-4 Inter.                       *
+  *                                                                      *
+  ************************************************************************
+
+                 Old MAPNL dimension =     37460
+                 New map done for IPROC =   0
+                 New MAPNL dimension =     18717
+                 New map done for IPROC =   1
+                 New MAPNL dimension =     18743
+
+
+
+********************************************************************************
+*                                                                              *
+*              I n p u t   O p e r a t i o n s   C o m p l e t e d             *
+*                                                                              *
+*              I n p u t   O p e r a t i o n s   C o m p l e t e d             *
+*                                                                              *
+*                                                                              *
+********************************************************************************
+
+
+
+     REM INPUT OK!!
+
+
+================================================================================
+                    FORCE FIELD IS --> ambe
+   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =
+
+
+
+                      Adjusting bond length to Force Field.
+                           This will take a while...
+
+
+                    Constraint load balance
+
+              OMP_Task=    1   CNST_MAP_DIM=      9482
+              OMP_Task=    2   CNST_MAP_DIM=      9499
+
+
+
+==================== Added Topology (driven or not) starts here=================
+
+ -- Added COM restraint potential ---------
+
+          Ligand:          1 ---->         52
+          Target:         53 ---->       1715
+          kcom       0.05000 kcal mol-1 Angs-2
+          r0com      8.74010 Angs
+
+           COM Steering is ON 
+          Start Time  0.0000    
+          Final Time  0.0000    
+          steering velocity     Infinity Angs/ns 
+==================== Added Topology ends here =================================
+
+
+ starting value for driven of COM distance is     8.7401.   Actual value is     9.5229
+
+
+
+
+==============  FFTW LIBRARIES IS USED FOR PME  ================================
+
+
+==============  R E P L I C A  E X C H A N G E  S I M U L A T I O N  ===========
+
+ ------ Current processor  is:             2
+ ------ Number of batteries:               1
+ ------ Number of processors:              4
+ ------ Number of  replicas:               4
+ ------ Lowest temperature:           298.00
+ ------ Highest temperatures:         298.00    496.67    496.67
+ ------ Exchanges attempted each:      60.00 fs
+ ------ Print diagnostic each       12000.00 fs
+ ------ REM.set updating time           0.00 fs
+ ------ Current replica is:                3
+ ------ Actual  replica is:                3
+ ------ Battery index is:                  1
+ ------ Current temperatures:         298.00    418.90    418.90
+ ------ Skip force (no nb intramol):     F
+ ------ Simulation started from scratch         
+
+ ------ Local scaling/solute tempering  is ON: definition of  SOLUTE follows
+ ------ group n.    1 goes from atom      1(tst ) to atom    52(tst )
+ ------ group n.    2 goes from atom    430(tyr ) to atom   444(tyr )
+        scaled improper (and h-proper) torsions
+        -     1    9   46    7    8
+        -     2    7   12   46   47
+        -     3   46   14   12   13
+        -     4   14   49   48   50
+        -     5   43   25   51   31
+        -     6   51   27   25   26
+        -     7   25   52   27   28
+        -     8   27   29   52   33
+        -     9   52   31   29   30
+        -    10   51   29   31   32
+        -    86  433  441  443  444
+        -    87  438  443  441  442
+        -    88  434  438  436  437
+        -    89  433  436  434  435
+        -    90  434  443  433  430
+        -    91  436  441  438  439
+        -   340   26   25   27   28
+        -   341   30   29   31   32
+        -   351  435  434  436  437
+        -   352  442  441  443  444
+
+        scaled (no-h) proper torsions
+        -     1    1   41    9    7
+        -     2    1   41    9   10
+        -     3    1   41    9   11
+        -     4    1    4   42   43
+        -     5    2    1   41    9
+        -     6    2    1    4   42
+        -     7    2    1    4    5
+        -     8    2    1    4    6
+        -     9    3    1   41    9
+        -    10    3    1    4   42
+        -    11    3    1    4    5
+        -    12    3    1    4    6
+        -    13    4    1   41    9
+        -    14    4   42   43   51
+        -    15    4   42   43   44
+        -    16    4   42   43   45
+        -    17    5    4    1   41
+        -    18    5    4   42   43
+        -    19    6    4    1   41
+        -    20    6    4   42   43
+        -    21    7   46   12   14
+        -    22    7   46   12   13
+        -    23    8    7    9   41
+        -    24    8    7    9   10
+        -    25    8    7    9   11
+        -    26    8    7   46   12
+        -    27    8    7   46   47
+        -    28    9    7   46   12
+        -    29    9    7   46   47
+        -    30   10    9    7   46
+        -    31   11    9    7   46
+        -    32   12   14   16   19
+        -    33   12   14   16   17
+        -    34   12   14   16   18
+        -    35   12   14   48   49
+        -    36   12   14   48   50
+        -    37   13   12   46   47
+        -    38   13   12   46   47
+        -    39   13   12   14   16
+        -    40   13   12   14   48
+        -    41   13   12   14   15
+        -    42   14   12   46   47
+        -    43   14   16   19   21
+        -    44   14   16   19   21
+        -    45   14   16   19   21
+        -    46   14   16   19   37
+        -    47   14   16   19   37
+        -    48   14   16   19   37
+        -    49   14   16   19   20
+        -    50   15   14   12   46
+        -    51   15   14   16   19
+        -    52   15   14   16   17
+        -    53   15   14   16   18
+        -    54   15   14   48   49
+        -    55   15   14   48   49
+        -    56   15   14   48   50
+        -    57   15   14   48   50
+        -    58   16   14   12   46
+        -    59   16   14   12   46
+        -    60   16   14   12   46
+        -    61   16   14   12   46
+        -    62   16   14   12   46
+        -    63   16   14   12   46
+        -    64   16   14   48   49
+        -    65   16   14   48   49
+        -    66   16   14   48   49
+        -    67   16   14   48   49
+        -    68   16   14   48   50
+        -    69   16   14   48   50
+        -    70   16   14   48   50
+        -    71   16   14   48   50
+        -    72   16   19   21   22
+        -    73   16   19   21   23
+        -    74   16   19   21   24
+        -    75   16   19   37   38
+        -    76   16   19   37   39
+        -    77   16   19   37   40
+        -    78   17   16   14   48
+        -    79   17   16   19   21
+        -    80   17   16   19   37
+        -    81   17   16   19   20
+        -    82   18   16   14   48
+        -    83   18   16   19   21
+        -    84   18   16   19   37
+        -    85   18   16   19   20
+        -    86   19   16   14   48
+        -    87   20   19   21   22
+        -    88   20   19   21   23
+        -    89   20   19   21   24
+        -    90   20   19   37   38
+        -    91   20   19   37   39
+        -    92   20   19   37   40
+        -    93   21   19   37   38
+        -    94   21   19   37   39
+        -    95   21   19   37   40
+        -    96   22   21   19   37
+        -    97   23   21   19   37
+        -    98   24   21   19   37
+        -    99   25   51   43   42
+        -   100   25   51   43   44
+        -   101   25   51   43   45
+        -   102   25   51   31   29
+        -   103   25   51   31   32
+        -   104   25   27   52   29
+        -   105   25   27   52   33
+        -   106   26   25   51   43
+        -   107   26   25   51   31
+        -   108   26   25   27   52
+        -   109   26   25   27   28
+        -   110   27   25   51   43
+        -   111   27   25   51   31
+        -   112   27   52   29   31
+        -   113   27   52   29   30
+        -   114   27   52   33   34
+        -   115   27   52   33   35
+        -   116   27   52   33   36
+        -   117   28   27   25   51
+        -   118   28   27   52   29
+        -   119   28   27   52   33
+        -   120   29   52   33   34
+        -   121   29   52   33   35
+        -   122   29   52   33   36
+        -   123   29   31   51   43
+        -   124   30   29   52   33
+        -   125   30   29   31   51
+        -   126   30   29   31   32
+        -   127   31   51   43   42
+        -   128   31   51   43   44
+        -   129   31   51   43   45
+        -   130   31   29   52   33
+        -   131   32   31   51   43
+        -   132   32   31   29   52
+        -   133   41    1    4   42
+        -   134   41    9    7   46
+        -   135   46   12   14   48
+        -   136   46   12   14   48
+        -   137   51   25   27   52
+        -   138   51   31   29   52
+        -  1388  424  426  428  430
+        -  1389  424  426  428  430
+        -  1390  424  426  428  430
+        -  1396  426  428  430  431
+        -  1397  426  428  430  432
+        -  1398  426  428  430  433
+        -  1404  427  426  428  430
+        -  1406  428  430  433  434
+        -  1407  428  430  433  443
+        -  1410  429  428  430  431
+        -  1411  429  428  430  432
+        -  1412  429  428  430  433
+        -  1416  430  428  445  446
+        -  1417  430  428  445  447
+        -  1418  430  428  445  447
+        -  1419  430  428  445  447
+        -  1420  430  433  434  435
+        -  1421  430  433  434  436
+        -  1422  430  433  443  441
+        -  1423  430  433  443  444
+        -  1424  431  430  428  445
+        -  1425  431  430  433  434
+        -  1426  431  430  433  443
+        -  1427  432  430  428  445
+        -  1428  432  430  433  434
+        -  1429  432  430  433  443
+        -  1430  433  430  428  445
+        -  1431  433  434  436  437
+        -  1432  433  434  436  438
+        -  1433  433  443  441  438
+        -  1434  433  443  441  442
+        -  1435  434  433  443  441
+        -  1436  434  433  443  444
+        -  1437  434  436  438  439
+        -  1438  434  436  438  441
+        -  1439  435  434  433  443
+        -  1440  435  434  436  437
+        -  1441  435  434  436  438
+        -  1442  436  434  433  443
+        -  1443  436  438  439  440
+        -  1444  436  438  441  442
+        -  1445  436  438  441  443
+        -  1446  437  436  438  439
+        -  1447  437  436  438  441
+        -  1448  438  441  443  444
+        -  1449  439  438  441  442
+        -  1450  439  438  441  443
+        -  1451  440  439  438  441
+        -  1452  442  441  443  444
+ ------ Total number of atoms of the solute is     67
+
+ ------ Both solute-solvent and solute-solute are         scaled
+
+================================================================================
+
+
+
+
+
+
+*******************************************************************************
+*                                                                             *
+*         M.D. simulation for an aggregate composed of 1715 atoms             *
+*         and solvated in         4395 polyatomic molecules                   *
+*         M.D. simulation for an aggregate composed of 1715 atoms             *
+*         and solvated in         4395 polyatomic molecules                   *
+*         M.D. simulation for an aggregate composed of 1715 atoms             *
+*         and solvated in         4395 polyatomic molecules                   *
+*                                                                             *
+*******************************************************************************
+
+
+==============  P A R A M E T E R S    F O R   T H E    R U N  =================
+
+
+           The Simulation will be run from scratch.
+                     Initial atomic coordinates will be generated. 
+           Reject =    60 H-Steps     Run =    60 H-Steps
+           Maxrun =     0 H-Steps
+
+           Save Subaverages every    333 M-Steps
+           Save Restart file every    30 H-Steps
+           Save PLOT file every        0 M-Steps
+           Save PDB  file every     1333 M-Steps
+           Save DUMP file every        0 M-Steps
+
+          potential truncation distance =10.3000 ang
+
+          time-step = 1.5000E+01 fs.
+
+-------------------------- Statistical Ensemble --------------------------------
+
+              ** isotropic N P T **
+
+           Number of atoms   = 14900
+
+                    CO-matrix
+
+                         27.52000   0.00000   0.00000
+                          0.00000  27.52000   0.00000
+                          0.00000   0.00000  27.52000
+
+           Volume            =     166738.264  Ang**3
+
+           Barostat mass     =       2541.972  u.m.a.
+
+           External pressure =          0.100  MPa   
+
+           Temperature       =        298.000  Kelvin
+
+ 1 Thermostat Mass (cofm)    =    1842424.411 a.m.u. A**2
+ 2 Thermostat Mass (solute)  =     598173.420 a.m.u. A**2
+ 3 Thermostat Mass (solvent) =    1841446.775 a.m.u. A**2
+
+
+ 1 Thermostat Ndf (cofm)    =   13192        Coordinates 
+ 2 Thermostat Ndf (solute)  =    4283        Coordinates 
+ 3 Thermostat Ndf (solvent) =   13185        Coordinates 
+
+
+-------------------------  Non Bonded Potential --------------------------------
+
+           PME    :  alpha  =    0.370 AA^-1     grid =    48   48   48
+                     order  =      4
+
+           r-RESPA: N0-time =    0.375 fs 
+                    N1-time =    0.750 fs 
+                     M-time =    1.500 fs 
+                     L-time =    3.000 fs 
+                     H-time =   15.000 fs 
+
+           r-RESPA:  M-cut  =    5.100 AA --  0.30  0.40 lskip_ew =F
+                     L-cut  =    7.800 AA --  0.30  0.50 lskip_ew =F
+                     H-cut  =   10.000 AA --  0.30  1.50 lskip_ew =T
+           r-RESPA: shl-pme =       l
+
+----------------------------- Neighbor List ------------------------------------
+
+           UPDATE every     6 Steps
+
+           Dispersion+Electrostatics  rspcut  =    12.10
+
+
+
+     ************************************************************************
+     *                        System  TOPOLOGY  List                        *
+     *                                                                      *
+     *           14900 Atoms         14919 Bonds        878 FLexible Bonds  *
+     *           14041 Rigid Bonds    3141 Angles      5732 P-Torsions      *
+     *             388 I-Torsions     4500 1-4 Inter.  5082 Atomic Groups   *
+     *            4503 Units          4397 Molecules                        *
+     *                                                                      *
+     ************************************************************************
+
+
+
+================================================================================
+
+
+
+
+
+********************************************************************************
+*                                                                              *
+*                M . D.   I n t e r m e d i a t e   R e s u l t s              *
+*                                                                              *
+*                M . D.   I n t e r m e d i a t e   R e s u l t s              *
+*                                                                              *
+*                                                                              *
+********************************************************************************
+
+
+
+
+     CPU and elapse time for linked cell indexing =    0.52742        0.26587    
+
+     Average Neighbor Lists Dimension ->        274743.0 +/-         1742.6
+
+     CPU and elapse time for update          =    0.14999        0.75232E-01
+
+
+
+          * * * * r - R E S P A  i s  O N  * * * *
+
+
+
+-------------------------------------------------------------------------------
+                    Coordinate check
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+================================================================================
+=                                                                              =
+=  Initial coordinates OK!                                                     =
+=  Shortest distance        0.957 between atoms 10470  10471                   =
+=                                                                              =
+================================================================================
+
+     CPU  time for m-contribution: RECP =     0.0000     DIR =    0.39575E-01 TOT =    0.39575E-01
+     elps time for m-contribution: RECP =     0.0000     DIR =    0.19864E-01 TOT =    0.19864E-01
+
+     CPU  time for l-contribution: RECP =    0.31469E-01 DIR =    0.10149     TOT =    0.13296    
+     elps time for l-contribution: RECP =    0.16742E-01 DIR =    0.50716E-01 TOT =    0.67458E-01
+
+     CPU  time for h-contribution: RECP =     0.0000     DIR =    0.56331E-01 TOT =    0.56331E-01
+     elps time for h-contribution: RECP =     0.0000     DIR =    0.28613E-01 TOT =    0.28613E-01
+
+     THEORIC SPEED UP FOR NON BONDED PART =     2.054
+
+     CPU  time for n1-contribution  =    0.32090E-02
+     elps time for n1-contribution  =    0.12065E-02
+
+     CPU  time for n0-contribution  =    0.43000E-03
+     elps time for n0-contribution  =    0.42985E-03
+
+     OVERALL THEORIC SPEED UP =     7.762
+
+
+     Expected ELAPSED time for the RUN:   0 hours and  1 min
+
+      Expected average time per M step:    0.61840E-01 sec.
+
+      Expected average time per femto :    0.41227E-01 sec.
+
+
+          ===========================================
+
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        274708.5 +/-         1660.7
+
+
+           Tstep    =       150.0 Total    =  -137711.16 SlvPot   =  -164365.50
+           SlvNonbd =  -164365.50 SlvCoul  =  -187550.25 SlvBnded =        0.00
+           SlvStr   =        0.00 SlvBend  =        0.00 SlvPtor  =        0.00
+           SlvItor  =        0.00 SltTot   =    -4071.83 SltPot   =   -9373.030
+           SltCoul  =   -17162.86 SltL-J   =    -1670.70 SltHyd   =        0.00
+           SltBond  =     9460.53 SltStr   =     1319.49 SltBen   =     3727.89
+           SltItor  =      246.98 SltPtor  =     4166.03 S-SPot   =   -3859.345
+           S-SCoul  =    -3085.60 SltTemp  =      297.31 TrasTem  =      320.86
+           RestTemp =      305.89 TotTemp  =      312.33 Hoover   =      145.79
+
+           TotPre   =      -47.70 ConPre   =     -165.04 KinPre   =      117.34
+           TmpPre   =     5813.65 Volume   =   165993.69 PV       =      9.9964
+        .....  cell parameters  ....             ....       stress    .....
+ XYZ    54.9580    54.9580    54.9580       -15.9742      -5.2159      -0.7100
+ ABC    90.0000    90.0000    90.0000        -2.9237      -5.5094      -0.5401
+       ........   ........   ........       -12.0074      -1.4969     -26.2121
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        276218.0 +/-         1849.6
+Velocities of the barostat have been rescaled   ---->
+
+Velocities have been rescaled ---->
+
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        276626.0 +/-         1798.6
+
+
+           Tstep    =       300.0 Total    =  -140139.18 SlvPot   =  -165555.33
+           SlvNonbd =  -165555.33 SlvCoul  =  -189370.94 SlvBnded =        0.00
+           SlvStr   =        0.00 SlvBend  =        0.00 SlvPtor  =        0.00
+           SlvItor  =        0.00 SltTot   =    -4108.91 SltPot   =   -9406.497
+           SltCoul  =   -17096.31 SltL-J   =    -1785.54 SltHyd   =        0.00
+           SltBond  =     9475.36 SltStr   =     1332.15 SltBen   =     3715.42
+           SltItor  =      243.50 SltPtor  =     4184.18 S-SPot   =   -4116.211
+           S-SCoul  =    -3312.86 SltTemp  =      297.11 TrasTem  =      304.97
+           RestTemp =      302.26 TotTemp  =      303.43 Hoover   =      833.33
+
+           TotPre   =      -56.99 ConPre   =     -169.28 KinPre   =      112.29
+           TmpPre   =     5925.98 Volume   =   164874.82 PV       =      9.9290
+        .....  cell parameters  ....             ....       stress    .....
+ XYZ    54.8342    54.8342    54.8342       -20.8847      -6.6128      -9.0843
+ ABC    90.0000    90.0000    90.0000         7.6964     -19.4409      -9.5605
+       ........   ........   ........       -21.7220       0.6663     -16.6595
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        278466.5 +/-         1677.6
+Velocities of the barostat have been rescaled   ---->
+
+Velocities of the thermostats have been rescaled   ---->
+
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        278980.0 +/-         1686.2
+
+
+           Tstep    =       450.0 Total    =  -140192.17 SlvPot   =  -166355.40
+           SlvNonbd =  -166355.40 SlvCoul  =  -191330.33 SlvBnded =        0.00
+           SlvStr   =        0.00 SlvBend  =        0.00 SlvPtor  =        0.00
+           SlvItor  =        0.00 SltTot   =    -4167.74 SltPot   =   -9298.145
+           SltCoul  =   -17134.25 SltL-J   =    -1704.02 SltHyd   =        0.00
+           SltBond  =     9540.13 SltStr   =     1342.60 SltBen   =     3810.72
+           SltItor  =      248.68 SltPtor  =     4138.07 S-SPot   =   -4225.279
+           S-SCoul  =    -3323.30 SltTemp  =      287.73 TrasTem  =      320.56
+           RestTemp =      298.20 TotTemp  =      307.82 Hoover   =      493.54
+
+           TotPre   =      -38.91 ConPre   =     -157.94 KinPre   =      119.02
+           TmpPre   =     4323.03 Volume   =   163498.56 PV       =      9.8461
+        .....  cell parameters  ....             ....       stress    .....
+ XYZ    54.6812    54.6812    54.6812         0.1623      -3.4392       1.5440
+ ABC    90.0000    90.0000    90.0000        -0.7701     -26.7832       6.7747
+       ........   ........   ........        -0.1783      11.9641     -12.2914
+     <------ Dumping Restart File ------->
+
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        280635.5 +/-         1710.9
+Velocities of the thermostats have been rescaled   ---->
+
+Velocities of the barostat have been rescaled   ---->
+
+
+
+           Tstep    =       600.0 Total    =  -140233.97 SlvPot   =  -167261.19
+           SlvNonbd =  -167261.19 SlvCoul  =  -192110.47 SlvBnded =        0.00
+           SlvStr   =        0.00 SlvBend  =        0.00 SlvPtor  =        0.00
+           SlvItor  =        0.00 SltTot   =    -4222.10 SltPot   =   -9543.023
+           SltCoul  =   -17086.41 SltL-J   =    -1679.38 SltHyd   =        0.00
+           SltBond  =     9222.77 SltStr   =     1293.73 SltBen   =     3632.10
+           SltItor  =      230.62 SltPtor  =     4066.27 S-SPot   =   -4425.706
+           S-SCoul  =    -3465.11 SltTemp  =      298.42 TrasTem  =      328.31
+           RestTemp =      308.92 TotTemp  =      317.26 Hoover   =       87.23
+
+           TotPre   =      -44.01 ConPre   =     -167.31 KinPre   =      123.31
+           TmpPre   =        0.52 Volume   =   161635.53 PV       =      9.7339
+        .....  cell parameters  ....             ....       stress    .....
+ XYZ    54.4727    54.4727    54.4727       -15.2194      -1.4451      -1.2097
+ ABC    90.0000    90.0000    90.0000         2.2449     -10.9944       5.5448
+       ........   ........   ........        -2.9435     -13.2912     -17.7913
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        281633.0 +/-         1775.0
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        282704.5 +/-         1900.1
+
+
+           Tstep    =       750.0 Total    =  -140266.34 SlvPot   =  -166694.37
+           SlvNonbd =  -166694.37 SlvCoul  =  -191806.85 SlvBnded =        0.00
+           SlvStr   =        0.00 SlvBend  =        0.00 SlvPtor  =        0.00
+           SlvItor  =        0.00 SltTot   =    -4220.40 SltPot   =   -9553.033
+           SltCoul  =   -17070.07 SltL-J   =    -1664.62 SltHyd   =        0.00
+           SltBond  =     9181.65 SltStr   =     1233.35 SltBen   =     3637.41
+           SltItor  =      258.43 SltPtor  =     4052.41 S-SPot   =   -4476.067
+           S-SCoul  =    -3508.99 SltTemp  =      299.08 TrasTem  =      318.38
+           RestTemp =      307.13 TotTemp  =      311.97 Hoover   =      679.12
+
+           TotPre   =      -12.93 ConPre   =     -133.68 KinPre   =      120.75
+           TmpPre   =     9081.68 Volume   =   160073.65 PV       =      9.6399
+        .....  cell parameters  ....             ....       stress    .....
+ XYZ    54.2967    54.2967    54.2967        -7.9823       3.3623      -9.8064
+ ABC    90.0000    90.0000    90.0000        -0.1380       0.7734      -3.7308
+       ........   ........   ........        -9.1810      -5.1873      -5.7221
+Velocities of the barostat have been rescaled   ---->
+
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        284335.5 +/-         2018.6
+Velocities of the thermostats have been rescaled   ---->
+
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        284167.0 +/-         1884.2
+Velocities have been rescaled ---->
+
+
+
+           Tstep    =       900.0 Total    =  -142722.69 SlvPot   =  -167896.77
+           SlvNonbd =  -167896.77 SlvCoul  =  -192382.40 SlvBnded =        0.00
+           SlvStr   =        0.00 SlvBend  =        0.00 SlvPtor  =        0.00
+           SlvItor  =        0.00 SltTot   =    -4210.05 SltPot   =   -9500.552
+           SltCoul  =   -17100.35 SltL-J   =    -1625.00 SltHyd   =        0.00
+           SltBond  =     9224.79 SltStr   =     1340.53 SltBen   =     3573.58
+           SltItor  =      221.66 SltPtor  =     4088.98 S-SPot   =   -4592.035
+           S-SCoul  =    -3594.89 SltTemp  =      296.71 TrasTem  =      297.84
+           RestTemp =      305.09 TotTemp  =      301.97 Hoover   =      241.52
+
+           TotPre   =      -77.06 ConPre   =     -190.55 KinPre   =      113.49
+           TmpPre   =     2122.75 Volume   =   159319.54 PV       =      9.5944
+        .....  cell parameters  ....             ....       stress    .....
+ XYZ    54.2113    54.2113    54.2113       -25.8987       5.9559      -3.9930
+ ABC    90.0000    90.0000    90.0000        -3.1137     -23.7064       6.6599
+       ........   ........   ........       -12.5368      23.2877     -27.4574
+
+                       Temperature has been rescaled     2 times 
+
+     <------ Dumping Restart File ------->
+
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        286069.5 +/-         2016.4
+
+
+           Tstep    =       150.0 Total    =  -142766.43 SlvPot   =  -169416.97
+           SlvNonbd =  -169416.97 SlvCoul  =  -195361.64 SlvBnded =        0.00
+           SlvStr   =        0.00 SlvBend  =        0.00 SlvPtor  =        0.00
+           SlvItor  =        0.00 SltTot   =    -4222.84 SltPot   =   -9441.712
+           SltCoul  =   -17118.24 SltL-J   =    -1581.85 SltHyd   =        0.00
+           SltBond  =     9258.38 SltStr   =     1244.30 SltBen   =     3718.30
+           SltItor  =      248.97 SltPtor  =     4046.77 S-SPot   =   -4592.976
+           S-SCoul  =    -3611.72 SltTemp  =      292.70 TrasTem  =      317.27
+           RestTemp =      308.32 TotTemp  =      312.17 Hoover   =      734.81
+
+           TotPre   =       -3.51 ConPre   =     -125.83 KinPre   =      122.32
+           TmpPre   =     3236.63 Volume   =   157458.30 PV       =      9.4824
+        .....  cell parameters  ....             ....       stress    .....
+ XYZ    53.9993    53.9993    53.9993        -2.7800      -3.2953     -11.4371
+ ABC    90.0000    90.0000    90.0000        -4.3836      -4.6806       2.6354
+       ........   ........   ........        15.4487      -9.2508       3.9524
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        287918.0 +/-         1997.0
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        289241.5 +/-         1728.9
+
+
+           Tstep    =       300.0 Total    =  -142752.87 SlvPot   =  -169925.96
+           SlvNonbd =  -169925.96 SlvCoul  =  -196550.49 SlvBnded =        0.00
+           SlvStr   =        0.00 SlvBend  =        0.00 SlvPtor  =        0.00
+           SlvItor  =        0.00 SltTot   =    -4283.44 SltPot   =   -9555.817
+           SltCoul  =   -17141.13 SltL-J   =    -1654.58 SltHyd   =        0.00
+           SltBond  =     9239.89 SltStr   =     1266.28 SltBen   =     3625.58
+           SltItor  =      221.13 SltPtor  =     4126.85 S-SPot   =   -4313.254
+           S-SCoul  =    -3290.26 SltTemp  =      295.70 TrasTem  =      320.35
+           RestTemp =      307.73 TotTemp  =      313.16 Hoover   =     1790.33
+
+           TotPre   =        8.73 ConPre   =     -115.65 KinPre   =      124.39
+           TmpPre   =      143.36 Volume   =   156349.87 PV       =      9.4156
+        .....  cell parameters  ....             ....       stress    .....
+ XYZ    53.8723    53.8723    53.8723         9.5744     -12.6678       3.8528
+ ABC    90.0000    90.0000    90.0000         2.0182      -4.5124      -7.1612
+       ........   ........   ........        19.1475       7.4719       3.6702
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        289761.0 +/-         1581.0
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        289989.5 +/-         1593.9
+
+
+           Tstep    =       450.0 Total    =  -142774.38 SlvPot   =  -169429.23
+           SlvNonbd =  -169429.23 SlvCoul  =  -194796.36 SlvBnded =        0.00
+           SlvStr   =        0.00 SlvBend  =        0.00 SlvPtor  =        0.00
+           SlvItor  =        0.00 SltTot   =    -4327.81 SltPot   =   -9566.357
+           SltCoul  =   -17208.26 SltL-J   =    -1664.65 SltHyd   =        0.00
+           SltBond  =     9306.55 SltStr   =     1239.10 SltBen   =     3674.08
+           SltItor  =      231.11 SltPtor  =     4162.21 S-SPot   =   -4413.010
+           S-SCoul  =    -3560.91 SltTemp  =      293.80 TrasTem  =      306.53
+           RestTemp =      307.38 TotTemp  =      307.01 Hoover   =     3129.28
+
+           TotPre   =      -21.65 ConPre   =     -141.05 KinPre   =      119.39
+           TmpPre   =     1337.34 Volume   =   155857.40 PV       =      9.3860
+        .....  cell parameters  ....             ....       stress    .....
+ XYZ    53.8157    53.8157    53.8157        -9.6920     -10.5376      -2.1830
+ ABC    90.0000    90.0000    90.0000        -1.7813      -6.0675       3.3389
+       ........   ........   ........         6.6762      -2.8977      -5.8915
+     <------ Dumping Restart File ------->
+
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        291097.0 +/-         1662.4
+
+
+           Tstep    =       600.0 Total    =  -142757.58 SlvPot   =  -169929.00
+           SlvNonbd =  -169929.00 SlvCoul  =  -196268.13 SlvBnded =        0.00
+           SlvStr   =        0.00 SlvBend  =        0.00 SlvPtor  =        0.00
+           SlvItor  =        0.00 SltTot   =    -4097.88 SltPot   =   -9447.568
+           SltCoul  =   -17037.10 SltL-J   =    -1761.10 SltHyd   =        0.00
+           SltBond  =     9350.63 SltStr   =     1320.08 SltBen   =     3689.72
+           SltItor  =      237.68 SltPtor  =     4103.09 S-SPot   =   -4577.481
+           S-SCoul  =    -3690.15 SltTemp  =      300.03 TrasTem  =      308.90
+           RestTemp =      306.93 TotTemp  =      307.78 Hoover   =     4521.32
+
+           TotPre   =       20.40 ConPre   =     -100.82 KinPre   =      121.23
+           TmpPre   =      821.16 Volume   =   154689.22 PV       =      9.3156
+        .....  cell parameters  ....             ....       stress    .....
+ XYZ    53.6809    53.6809    53.6809        23.6934       7.0049      -6.8513
+ ABC    90.0000    90.0000    90.0000        -8.7340      -6.7395      11.9807
+       ........   ........   ........       -13.0162      13.9736       3.4484
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        292042.5 +/-         1802.0
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        292770.0 +/-         1922.0
+
+
+           Tstep    =       750.0 Total    =  -142750.84 SlvPot   =  -170491.52
+           SlvNonbd =  -170491.52 SlvCoul  =  -197181.60 SlvBnded =        0.00
+           SlvStr   =        0.00 SlvBend  =        0.00 SlvPtor  =        0.00
+           SlvItor  =        0.00 SltTot   =    -4098.31 SltPot   =   -9435.526
+           SltCoul  =   -17109.86 SltL-J   =    -1643.05 SltHyd   =        0.00
+           SltBond  =     9317.39 SltStr   =     1368.14 SltBen   =     3642.40
+           SltItor  =      221.32 SltPtor  =     4085.46 S-SPot   =   -4599.277
+           S-SCoul  =    -3526.74 SltTemp  =      299.33 TrasTem  =      312.38
+           RestTemp =      304.48 TotTemp  =      307.88 Hoover   =     6076.03
+
+           TotPre   =       -4.90 ConPre   =     -128.01 KinPre   =      123.11
+           TmpPre   =        0.16 Volume   =   154038.44 PV       =      9.2764
+        .....  cell parameters  ....             ....       stress    .....
+ XYZ    53.6055    53.6055    53.6055         5.0325       9.8653      -3.9340
+ ABC    90.0000    90.0000    90.0000        20.2159      -3.3164      -6.1012
+       ........   ........   ........        13.0348      -4.8519      -6.6120
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        292771.0 +/-         1824.7
+
+<------ Linked cell list indexing updated -------->
+
+
+     Average Neighbor Lists Dimension ->        292969.5 +/-         1824.6
+
+
+           Tstep    =       900.0 Total    =  -142763.04 SlvPot   =  -171030.59
+           SlvNonbd =  -171030.59 SlvCoul  =  -197221.20 SlvBnded =        0.00
+           SlvStr   =        0.00 SlvBend  =        0.00 SlvPtor  =        0.00
+           SlvItor  =        0.00 SltTot   =    -4074.59 SltPot   =   -9534.296
+           SltCoul  =   -17113.38 SltL-J   =    -1635.63 SltHyd   =        0.00
+           SltBond  =     9214.71 SltStr   =     1241.58 SltBen   =     3663.24
+           SltItor  =      244.47 SltPtor  =     4065.39 S-SPot   =   -4493.975
+           S-SCoul  =    -3602.49 SltTemp  =      306.20 TrasTem  =      307.75
+           RestTemp =      306.06 TotTemp  =      306.78 Hoover   =     7575.95
+
+           TotPre   =       -5.14 ConPre   =     -126.62 KinPre   =      121.48
+           TmpPre   =      302.42 Volume   =   153784.94 PV       =      9.2611
+        .....  cell parameters  ....             ....       stress    .....
+ XYZ    53.5761    53.5761    53.5761        -6.4758      -0.0105       2.5103
+ ABC    90.0000    90.0000    90.0000         5.4380       4.4986      -1.1907
+       ........   ........   ........         6.7415       9.8625      -3.1633
+     <------ Dumping Restart File ------->
+
+                                          Elaps.          CPU
+                     time(integr)  =      4.7469         9.2836     sec.
+                     time(cnst)    =      12.625         25.092     sec.
+                     time(intra NO)=      2.2584         4.4716     sec.
+                     time(intra N1)=      2.7440         5.4164     sec.
+                     time(inter M) =      24.947         49.388     sec.
+                     time(inter L) =      33.359         66.046     sec.
+                     time(inter H) =      3.8148         7.5630     sec.
+                     time(updte U) =      8.4843         3.1566     sec.
+                     time(recpr F) =      9.0061         17.764     sec.
+
+
+          ===========================================
+
+                Total cpu time for the run       =      201.19    
+                Total elapsed time for the run   =      102.19    
+                Averaged time per femtosecond    =        0.11177    
+                Averaged elapsed per femtosecond =        0.56772E-01
+
+
+
+          ===========================================
+
+
+
+     ************************************************************************
+     *                                                                      *
+     *                        PROGRAM COMPLETED                             *
+     *                                                                      *
+     ************************************************************************
+

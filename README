@@ -1,0 +1,30 @@
+Archive for ORAC profiling. The tests run solvated FKPB12 with a ligand. 
+FFTW3 for FFT transform must be used in all tests
+
+This is the directory tree of the archive 
+.
+├── ff    ! force field tpg/prm file 
+├── src   ! source code 
+├── test1 ! OpenMP test (no MPI 8 OpenMP threads) 
+├── test2 ! HREM test (openMP/MPI 2 threads 4 MPI procs) 
+│   ├── b-RSTRT   ! contains restart files for test3 and test4 
+│   ├── PAR0001   ! reference output for proc 1
+│   ├── PAR0002   ! reference output for proc 2
+│   ├── PAR0003   ! reference output for proc 3
+│   └── PAR0004   ! reference output for proc 4
+├── test3 ! alchemy test 1 (openMP/MPI 2 threads 4 MPI procs)  starts from b-RSTRT files (calls force_alchemy.f) 
+│   ├── PAR0001   ! reference output for proc 1
+│   ├── PAR0002	  ! reference output for proc 2
+│   ├── PAR0003	  ! reference output for proc 3
+│   └── PAR0004	  ! reference output for proc 4
+└── test4 alchemy test 2 (openMP/MPI 2 threads 4 MPI procs)  starts from b-RSTRT files (calls force_alchemy_shifted.f )
+    ├── PAR0001   ! reference output for proc 1
+    ├── PAR0002	  ! reference output for proc 2
+    ├── PAR0003	  ! reference output for proc 3
+    └── PAR0004	  ! reference output for proc 4
+
+Instructions on how to compile in README src
+Instructions on how to rerun the tests in each test? dir 
+input are designed not to overwrite the reference output
+ 
+
