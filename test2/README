@@ -1,11 +1,11 @@
-This test produce a short HREM trajectory for solvated FKB12 with ligand using the OpenMP/MPI 
+This test produces a short HREM trajectory for solvated FKB12 with ligand using the OpenMP/MPI 
 (2 threads 4 MPI process) 
 
 The input file is md.in
-the starting conf of the FKBP12-ligand is the file in start.pdb 
-potential parameters are in the directory ../ff/
+the starting configuration of the FKBP12-ligand complex is the file in start.pdb 
+Potential parameters (amber99sbildn/gaff2) are in the directory ../ff/
 
-To run this test  just do form this directory 
+To run this test  just do from this directory 
 
 mpirun -n 4 ../../src/GNU-FFTW-OMP-MPI/orac < rem.in > rem.out
 
