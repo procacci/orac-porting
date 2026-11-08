@@ -96,6 +96,7 @@ OBJFOR = \
   brent.o \
   brent_total.o \
   brot.o \
+  build_excl.o \
   calc_avg2_str.o \
   calc_avg_str.o \
   calc_avg_xrms.o \
@@ -714,6 +715,7 @@ else
 blkdta.CPP.o: blkdta.f90 cpropar.o parst.CPP.o unit.o rem.CPP.o sge.CPP.o meta.o dcd.o
 endif
 brot.o: brot.f unit.o
+build_excl.o: build_excl.f cpropar.o parst.CPP.o unit.o
 calc_avg2_str.o: calc_avg2_str.f parst.CPP.o
 calc_avg_str.o: calc_avg_str.f parst.CPP.o
 calc_gofr.o: calc_gofr.f parst.CPP.o pbc.h
