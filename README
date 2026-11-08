@@ -23,8 +23,8 @@ This is the directory tree of the archive
     ├── PAR0003	  ! reference output for proc 3
     └── PAR0004	  ! reference output for proc 4
 
-Instructions on how to compile in README src
-Instructions on how to rerun the tests in each test? dir 
-input are designed not to overwrite the reference output
+Instructions on how to compile in the README file in the src directory
+Instructions on how to rerun the tests in each test? directory. 
+Input are designed not to overwrite the reference output
  
 

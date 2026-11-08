@@ -1,17 +1,17 @@
 This test produce a swarm of NE alchemical trajectories
 for solvated FKB12 with ligand using the OpenMP/MPI
-The only difference compared to test3 is that this run is using
-force_alchemy_shifted instead of force_alchemy for the direct lattice
+The only difference between test3 is that this run is using
+force_alchemy_shifted instead of force_alchemy for the direct lattice.
 This force routine uses a shifted potential instead of a standard soft-core
-and is used in the blob dual topology simulations
+which is the regularization used in the blob dual topology simulations
 
 (2 threads 4 MPI process) 
 
 The input file is alchmey.in
-the starting conf are the files in the restart-dir produced by test2
-potential parameters are read from the tpgprm file produced in test1
+As in test3, the starting conf are the files in the restart-dir produced by test2.
+Potential parameters are read from the tpgprm file produced in test1
 
-To run this test  just do form this directory 
+To run this test  just do from this directory 
 
 mpirun -n 4 ../../src/GNU-FFTW-OMP-MPI/orac < alchemy.in > alchemy.out
 

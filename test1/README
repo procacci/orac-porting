@@ -5,15 +5,15 @@ The input file is md.in
 the starting conf of the FKBP12-ligand is the file in start.pdb 
 potential parameters are in the directory ../ff/
 
-To run this test  just do form this directory 
+To run this test  just do from this directory 
 
 ../../src/GNU-FFTW-OMP/orac < md.in > test1.md.out
 
-The test should produce the follwoing files
+The test should produce the following files
 test1.md.out    -> general gromacs/like (md.log) output
 test1.G0.tt     -> time record of the energies for energy conservation check
-test1.md_1.pdb  -> trajetoru file 
-test1.com.dat   -> logand-protein com-com distance file  
+test1.md_1.pdb  -> trajetory file 
+test1.com.dat   -> ligand-protein com-com distance file  
 
 reference output are in the files
 md.out    
