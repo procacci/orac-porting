@@ -122,4 +122,14 @@ module cpropar
        ,slv_read,adihed_slv,pdb_read,slt_create,slv_randomize &
        ,slv_add,lskipm,lskipl,lskiph
 
+!=======================================================================
+!     Exclusion list for the pair-wise nonbonded force.
+!     Built once at the end of add_solvent_tpg, from lbnd (1-2),
+!     int13 (1-3), int14 (1-4).  Used by force to subtract the full
+!     (unfudged) interaction that the main loop adds for every pair,
+!     and by mtsmd to check that every excluded pair is within r_M.
+!=======================================================================
+      INTEGER :: nexcl = 0
+      INTEGER, ALLOCATABLE :: excl_i1(:), excl_i2(:)
+
 end module cpropar
