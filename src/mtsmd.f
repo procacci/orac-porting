@@ -2383,10 +2383,12 @@ c---  if alchemy computes starting work
         time=0.d0 
         nprint=1
       end if
-        
+      
+*--   build list of exluded contacts used in force-GPU
+      call build_excl(ntap, xp0, yp0, zp0, iret)
+
 100   CONTINUE
-
-
+      
       nstep=nstep+1
       mstep=mstep+1
 
